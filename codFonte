@@ -2,7 +2,7 @@
 
 int main () {
 
-  printf("teste");
-  getche();
+  printf("teste\n");
+  getchar();
   return 0;
 }
