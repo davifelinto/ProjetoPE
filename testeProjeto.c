@@ -2,8 +2,7 @@
 #include <conio.h>
 #include <string.h>
 #include "color.h"
-//--------------------------ENTIDADES--------------------------
-
+//-------------------------- ENTIDADES -----------------------------------------------------------------------------------------
 typedef struct {
 	char nome[20];
     int valor;
@@ -32,7 +31,8 @@ typedef struct {
 	char nome[30];
 	char deletado; // *=deletado ' '=nao deletado
 }tJogador;
-//-----------------------FUNCOES--------------------------------------
+//-----------------------FUNCOES-----------------------------------------------------------------------------------------------
+//-----------------------INICIA O NOME, VALOR E OS MARCADORES DAS HABILIDADES -------------------------------------------------
 void iniciaHab(skill habilidades[]){
     int i;
     strcpy(habilidades[0].nome, "Forca");
@@ -46,6 +46,7 @@ void iniciaHab(skill habilidades[]){
         habilidades[i].marcado = ' ';
     }
 }
+//-----------------------INICIA O NOME E OS MARCADORES DAS PERICIAS -----------------------------------------------------------
 void iniciaPericias(skill pericias[]){
     int i;
     strcpy(pericias[0].nome, "Atletismo");
@@ -70,6 +71,7 @@ void iniciaPericias(skill pericias[]){
 		pericias[i].marcado = ' ';
 	}
 }
+//-----------------------ALTERA O MARCADOR DAS PERICIAS -----------------------------------------------------------------------
 void alteraPericias(skill pericias[]){
 	char setas;
 	int tam = 18, opcao = 0, i;
@@ -117,6 +119,7 @@ void alteraPericias(skill pericias[]){
 		}
 	}
 }
+//-----------------------ALTERA O VALOR DAS HABILIDADES ------------------------------------------------------------------------
 void alteraHabilidades(skill habilidades[]){
     int i, tam = 6, opcao = 0;
     char setas;
@@ -152,6 +155,7 @@ void alteraHabilidades(skill habilidades[]){
         system("cls");
     } while (setas != 13);
 }
+//-----------------------ALTERA O VALOR DAS PERICIAS -------------------------------------------------------------------------
 void valorDePericia (skill pericia[], skill habilidade[], int lvl){
 	int prof= (1 + ((lvl + 3) / 4));
     int i;
