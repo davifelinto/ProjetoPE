@@ -221,7 +221,6 @@ tJogador lerJogador(int local, FILE *arq) {
     fread(&player, sizeof(player), 1, arq);
  	return player;
 }
-
 int consultarJogador(int cod, FILE *arq) {
 	tJogador player;
 	int local=0;
@@ -233,7 +232,6 @@ int consultarJogador(int cod, FILE *arq) {
 	}
 	return -1;
 }
-
 void listarJogadores(FILE *arq) {
 	tJogador player;
 	fseek(arq, 0, SEEK_SET);
@@ -241,9 +239,17 @@ void listarJogadores(FILE *arq) {
    	printf("------------------------------------\n");
     while (fread(&player, sizeof(player), 1, arq))
     	if (player.deletado != '*')
-    		printf("%5d \t%-30s\n", player.codigo, player.nome);
+    		printf("%5d\t%-30s\n", player.codigo, player.nome);
 }
-
+void gravarJogador(tJogador player, int local, FILE *arq) {
+	if (local <= 0) {
+		player.deletado = ' ';
+		fseek(arq, 0, SEEK_END);
+	}
+	else
+		fseek(arq, (local-1)*sizeof(player), SEEK_SET);
+	fwrite(&player, sizeof(player), 1, arq);
+}
 void excluirJogador(int local, FILE *arq) {
 	tJogador player;
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
@@ -255,17 +261,17 @@ void excluirJogador(int local, FILE *arq) {
 
 void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	tJogador player;
-	FILE *arqcodigo = fopen("jogadores.codigo", "wb");
-	if (arqcodigo == NULL)
+	FILE *arqTemp = fopen("jogadores.aux", "wb");
+	if (arqTemp == NULL)
 		return;
 	fseek(*arq, 0, SEEK_SET);
     while (fread(&player, sizeof(player), 1, *arq))
     	if (player.deletado != '*')
-			fwrite(&player, sizeof(player), 1, arqcodigo);
+			fwrite(&player, sizeof(player), 1, arqTemp);
 	fclose(*arq);
-	fclose(arqcodigo);
+	fclose(arqTemp);
 	remove(arquivo);
-	rename("jogadores.codigo", arquivo);
+	rename("jogadores.aux", arquivo);
 	*arq = abrirArquivo(arquivo);
 }
 
@@ -279,14 +285,14 @@ tPersonagem lerPersonagem(int local, FILE *arq){
 	return persona;
 }
 
-void salvarPersonagem(tPersonagem personagem, int local, FILE *arq){
+void salvarPersonagem(tPersonagem persona, int local, FILE *arq){
 	if (local <= 0) {
-		personagem.deletado = ' ';
+		persona.deletado = ' ';
 		fseek(arq, 0, SEEK_END);
 	}
 	else
-		fseek(arq, (local-1)*sizeof (personagem), SEEK_SET);
-	fwrite(&personagem, sizeof (personagem), 1, arq);
+		fseek(arq, (local-1)*sizeof (persona), SEEK_SET);
+	fwrite(&persona, sizeof (persona), 1, arq);
 }
 
 void listarPersonagems(FILE *arqPersona, FILE *arqJogador) {
@@ -334,6 +340,7 @@ void mostrarPersonagem(tPersonagem persona, tJogador player) {
 	}
 }
 
+//passar o nome do personagem como parametro de busca?
 int consultarPersonagem(int cod, FILE *arq) {
 	tPersonagem persona;
 	int local=0;
@@ -357,30 +364,19 @@ void excluirPersonagem(int local, FILE *arq) {
 
 void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	tPersonagem persona;
-	FILE *arqcodigo = fopen("personagens.codigo", "wb");
-	if (arqcodigo == NULL)
+	FILE *arqTemp = fopen("personagens.aux", "wb");
+	if (arqTemp == NULL)
 		return;
 	fseek(*arq, 0, SEEK_SET);
     while (fread(&persona, sizeof(persona), 1, *arq))
     	if (persona.deletado != '*')
-			fwrite(&persona, sizeof(persona), 1, arqcodigo);
+			fwrite(&persona, sizeof(persona), 1, arqTemp);
 	fclose(*arq);
-	fclose(arqcodigo);
+	fclose(arqTemp);
 	remove(arquivo);
-	rename("personagens.codigo", arquivo);
+	rename("personagens.aux", arquivo);
 	*arq = abrirArquivo(arquivo);
 }
-
-void gravarJogador(tJogador player, int local, FILE *arq) {
-	if (local <= 0) {
-		player.deletado = ' ';
-		fseek(arq, 0, SEEK_END);
-	}
-	else
-		fseek(arq, (local-1)*sizeof(player), SEEK_SET);
-	fwrite(&player, sizeof(player), 1, arq);
-}
-
 
 int main(){
     int escolha1, escolha2, codigo, local;
