@@ -121,25 +121,25 @@ void alteraPericias(skill pericias[]){
 }
 //-----------------------ALTERA O VALOR DAS HABILIDADES -----------------------------------------------------------------------
 void alteraHabilidades(skill habilidades[]){
-    int i, tam = 6, opcao = 0;
-    char setas;
-    do
-    {
-        for(i = 0; i < tam; i++){
-            if(i == opcao){
-                textcolor(GREEN);
-            }else{
-                textcolor(LIGHTGRAY);
-            }
-              printf("%-12s : <%.2i>\n", habilidades[i].nome, habilidades[i].valor); 
-        }
-        do{
+	int i, tam = 6, opcao = 0;
+	char setas;
+	do{
+		printf("Informe os valores das habilidades do personagem: \n");
+		for(i = 0; i < tam; i++){
+			if(i == opcao){
+				textcolor(GREEN);
+			}else{
+				textcolor(LIGHTGRAY);
+			}
+				printf("%-12s : <%.2i>\n", habilidades[i].nome, habilidades[i].valor); 
+		}
+		do{
 			setas = _getch();
 		}while(setas != 77 && setas != 75 && setas != 72 && setas != 80 && setas != 13);
 		switch(setas){
 			case 77://direita
-                    if(habilidades[opcao].valor < 20)
-					    habilidades[opcao].valor += 1;
+				if(habilidades[opcao].valor < 20)
+					habilidades[opcao].valor += 1;
 				break;
 			case 75://esquerda
 					habilidades[opcao].valor -= 1;
@@ -152,8 +152,8 @@ void alteraHabilidades(skill habilidades[]){
 				if(opcao == -1) 
 					opcao = tam-1;
 		}
-        system("cls");
-    } while (setas != 13);
+		system("cls");
+	} while (setas != 13);
 }
 //-----------------------ALTERA O VALOR DAS PERICIAS --------------------------------------------------------------------------
 void valorDePericia (skill pericia[], skill habilidade[], int lvl){
@@ -414,7 +414,7 @@ int main(){
 							gets(personagem.classe);
 							printf("\nInforme o nivel do personagem: ");
 							scanf("%d", &personagem.nivel);
-							printf("\nInforme os valores das habilidades do personagem: ");
+							system("cls");
 							alteraHabilidades(personagem.habil);
 							alteraPericias(personagem.pericias);
 							valorDePericia(personagem.pericias, personagem.habil, personagem.nivel);
