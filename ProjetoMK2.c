@@ -214,7 +214,6 @@ FILE *abrirArquivo(char arquivo[]){
 }
 
 // - - - - - Jogadores - - - - -// Aparentemente funcionando todos
-
 tJogador lerJogador(int local, FILE *arq) {
 	tJogador player;
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
@@ -258,7 +257,6 @@ void excluirJogador(int local, FILE *arq) {
 	fseek(arq, -sizeof(player), SEEK_CUR);
 	fwrite(&player, sizeof(player), 1, arq);
 }
-
 void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	tJogador player;
 	FILE *arqTemp = fopen("jogadores.aux", "wb");
@@ -275,9 +273,8 @@ void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	*arq = abrirArquivo(arquivo);
 }
 
-
 // - - - - - Personagens - - - - -//
-//Ta dando ruim (nao ta pegando os valores certos, talvez problema de posicionamento do cursor no arquivo)//
+//Ta dando ruim (trava na hora de listar, nao sei se ta salvando)//
 tPersonagem lerPersonagem(int local, FILE *arq){
 	tPersonagem persona;
 	fseek(arq, (local-1)*sizeof(persona), SEEK_SET);
