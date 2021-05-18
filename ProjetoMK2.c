@@ -81,17 +81,11 @@ void alteraPericias(skill pericias[]){
 			if(pericias[i].marcado != ' '){
 				backgroundcolor(GREEN);
 			}
-			else
-				backgroundcolor(0);
 			if(i == opcao)
 				textcolor(RED);
-			else
-				textcolor(LIGHTGRAY);
 			printf("%s\n", pericias[i].nome);
-		}
-		if(opcao == 17 || pericias[17].marcado == '*'){
 			backgroundcolor(0);
-			textcolor(LIGHTGRAY);	
+			textcolor(LIGHTGRAY);
 		}
 		do{
 			setas = _getch();
@@ -126,12 +120,10 @@ void alteraHabilidades(skill habilidades[]){
 	do{
 		printf("Informe os valores das habilidades do personagem: \n");
 		for(i = 0; i < tam; i++){
-			if(i == opcao){
+			if(i == opcao)
 				textcolor(GREEN);
-			}else{
+				printf("%-12s : <%.2i>\n", habilidades[i].nome, habilidades[i].valor);
 				textcolor(LIGHTGRAY);
-			}
-				printf("%-12s : <%.2i>\n", habilidades[i].nome, habilidades[i].valor); 
 		}
 		do{
 			setas = _getch();
