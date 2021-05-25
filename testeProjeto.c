@@ -509,16 +509,91 @@ void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	rename("personagens.aux", arquivo);
 	*arq = abrirArquivo(arquivo);
 }
+////////////////////////////////////////	CONVERTER PARA XML		///////////////////////////////////////////////////
+void criaXML_P(FILE *arqPersona) {
+	int i;
+	tPersonagem persona;
+	FILE *arqXML = fopen("personagens.xml", "w");
+
+	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
+	fprintf(arqXML, "<Personagens>\n");
+	while (fread(&persona, sizeof(persona), 1, arqPersona)) {
+		if(persona.deletado != '*') {
+			fprintf(arqXML, "\t<Personagem>\n");
+			fprintf(arqXML, "\t\t<nome>\"%s\"</nome>\n", persona.nome);
+			fprintf(arqXML, "\t\t<raca>\"%s\"</raca>\n", persona.raca);
+			fprintf(arqXML, "\t\t<classe>\"%s\"</classe>\n", persona.classe);
+			fprintf(arqXML, "\t\t<nivel>%i</nivel>\n", persona.nivel);
+			for(i = 0; i< 6; i++){
+				fprintf(arqXML, "\t\t<habilidade>\n");
+				fprintf(arqXML, "\t\t\t<nome>\"%s\"</nome>\n", persona.habil[i].nome);
+				fprintf(arqXML, "\t\t\t<valor>%i</valor>\n", persona.habil[i].valor);
+				fprintf(arqXML, "\t\t</habilidade>\n");
+			}
+			for(i = 0; i < 18; i++){
+				fprintf(arqXML, "\t\t<pericia>\n");
+				fprintf(arqXML, "\t\t\t<nome>\"%s\"</nome>\n", persona.pericias[i].nome);
+				fprintf(arqXML, "\t\t\t<valor>%i</valor>\n", persona.pericias[i].valor);
+				fprintf(arqXML, "\t\t</pericia>\n");
+			}
+			fprintf(arqXML, "\t\t<notas>\"%s\"</notas>\n", persona.notas);
+			fprintf(arqXML, "\t\t<codJogador>%i</codJogador>\n", persona.codJogador);
+			fprintf(arqXML, "\t</Personagem>\n");
+		}
+	}
+	fprintf(arqXML, "</Personagens>\n");
+	fclose(arqXML);
+	printf("\nExportando \"personagens.xml\"... Pressione qualquer tecla para continuar.");
+	_getch();
+}
+void criaXML_J(FILE *arqJogador) {
+	tJogador jogador;
+	FILE *arqXML = fopen("jogadores.xml", "w");
+	
+	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
+	fprintf(arqXML, "<Jogadores>\n");
+	while (fread(&jogador, sizeof(jogador), 1, arqJogador)) {
+		if(jogador.deletado != '*') {
+			fprintf(arqXML, "\t<Jogador>\n");
+			fprintf(arqXML, "\t\t<nome>\"%s\"</nome>\n", jogador.nome);
+			fprintf(arqXML, "\t\t<codigo>%i</codigo>\n", jogador.codigo);
+			fprintf(arqXML, "\t</Jogador>\n");
+		}
+	}
+	fprintf(arqXML, "</Jogadores>\n");
+	fclose(arqXML);
+	printf("\nExportando \"jogador.xml\"... Pressione qualquer tecla para continuar.");
+	_getch();
+}/*
+void criaXML_I(FILE *arqItens) {
+	tItens item;
+	FILE *arqXML = fopen("itens.xml", "w");
+	
+	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
+	fprintf(arqXML, "<Itens>\n");
+	while (fread(&item, sizeof(item), 1, arqItens)) {
+		if(item.deletado != '*') {
+			fprintf(arqXML, "\t<Item>\n");
+			fprintf(arqXML, "\t\t<nome>\"%s\"</nome>\n", item.nome);
+			fprintf(arqXML, "\t\t<tier>%i</tier>\n", item.tier);
+			fprintf(arqXML, "\t\t<descricao>\"%s\"</nome>\n", item.descr);
+			fprintf(arqXML, "\t</Item>\n");
+		}
+	}
+	fprintf(arqXML, "</Itens>\n");
+	fclose(arqXML);
+	printf("\nExportando \"itens.xml\"... Pressione qualquer tecla para continuar.");
+	_getch();
+}*/
 //////////////////////////////////////////////////// MAIN /////////////////////////////////////////////////////////////
 int main(){
-    int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 5, tam2 = 6, tamM = 6;
-    char *menu1[]= {"Personagem", "Jogador", "Itens", "Esvaziar lixeira", "Sair"};
-	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar","Excluir", "Voltar"};
+    int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 6, tam2 = 6, tamM = 6;
+    char *menu1[]= {"Personagem", "Jogador", "Itens", "Esvaziar lixeira", "Exportar dados para XML", "Sair"};
+	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar", "Excluir", "Voltar"};
 	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
     tPersonagem personagem;
 	tJogador jogador;
 	FILE *arqPersonagem, *arqJogador; //, *arqItens;
-
 	arqPersonagem = abrirArquivo("personagens.dat");
 	arqJogador = abrirArquivo("jogadores.dat");
 	//arqItens = abrirArquivo("itens.dat");
@@ -748,7 +823,12 @@ int main(){
 				// menu itens
 				break;
 			case 4:
+				excluirFisicamenteJogador(&arqJogador, "jogadores.dat");
+				excluirFisicamentePersonagem(&arqPersonagem, "personagens.dat");
 				break;
+			case 5:
+				criaXML_P(arqPersonagem);
+				criaXML_J(arqJogador);				
 		}
 	}while(escolha1 != 0);
 	fclose(arqPersonagem);
