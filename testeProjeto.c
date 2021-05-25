@@ -25,7 +25,7 @@ typedef struct {
 	char tier;
 	char descr[200];
 	char deletado; // *=deletado ' '=nao deletado
-}tItens;
+}tItem;
 typedef struct {
 	int codigo; // chave primaria
 	char nome[30];
@@ -484,7 +484,7 @@ void excluirPersonagem(int local, FILE *arq) {
 	fwrite(&persona, sizeof(persona), 1, arq);
 }
 //////////////////////// EXCLUI O PERSONAGEM LIGADO AO JOGADOR QUE VAI SER DELETADO //////////////////////////////////////////
-void excluiPersonagemLigado(int cod, FILE *arq) {//PROBLEMA AQUI////////////////////////////////////////////////////////////////////////////////////////////////////////
+void excluiPersonagemLigado(int cod, FILE *arq) {
 	tPersonagem persona;
 	int local=0;
 	fseek(arq, 0, SEEK_SET);
@@ -493,7 +493,7 @@ void excluiPersonagemLigado(int cod, FILE *arq) {//PROBLEMA AQUI////////////////
 		if ((cod == persona.codJogador) && (persona.deletado != '*')){
     		excluirPersonagem(local, arq);
     		printf("%s deletado\n", persona.nome);
-    		//QUANDO LE O ULTIMO PERSONAGEM TA CRIANDO O MESMO PERSONAGEM INFINITAMENTE
+			fseek(arq, (local)*sizeof(persona), SEEK_SET);
 		}
 	}
 }
@@ -512,12 +512,83 @@ void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	rename("personagens.aux", arquivo);
 	*arq = abrirArquivo(arquivo);
 }
+
+// - - - - - ITENS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+////////////// LER UM JOGADOR DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+tItem lerItem(int local, FILE *arq) {
+	tItem objeto;
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+    fread(&objeto, sizeof(objeto), 1, arq);
+ 	return objeto;
+}
+////////////// CONSULTAR O ARQUIVO DE ITENS ////////////////////////////////////////////////////////////////////////////////////
+int consultarItem(char nome[], FILE *arq) {
+	tItem objeto;
+	int local=0;
+	fseek(arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, arq)) {
+    	local++;
+    	if ((strcmp(objeto.nome, nome) == 0) && (objeto.deletado != '*'))
+    		return local;
+	}
+	return -1;
+}
+////////////// LISTAR OS ITENS DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void listarItens(FILE *arq) {
+	tItem objeto;
+	fseek(arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, arq))
+    	if (objeto.deletado != '*'){
+			printf("-----------------------------------------------------------------INICIO\n");
+			printf("Nome: %s\nTier: %c\n", objeto.nome, objeto.tier);
+   			printf("------------------------------------\n");
+    		printf("Descricao: %-200s\n", objeto.descr);
+			printf("--------------------------------------------------------------------FIM\n\n");
+		}
+}
+////////////// GRAVA OS OBJETOS NO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void gravarItem(tItem objeto, int local, FILE *arq) {
+	if (local <= 0) {
+		objeto.deletado = ' ';
+		fseek(arq, 0, SEEK_END);
+	}
+	else
+		fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+	fwrite(&objeto, sizeof(objeto), 1, arq);
+}
+////////////// MARCA O ITEM COM A FLAG DE EXCLUSAO ////////////////////////////////////////////////////////////////////////////////////
+void excluirItem(int local, FILE *arq) {
+	tItem objeto;
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+    fread(&objeto, sizeof(objeto), 1, arq);
+    objeto.deletado = '*';
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+	fwrite(&objeto, sizeof(objeto), 1, arq);
+}
+////////////// EXCLUI O ITEM DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void excluirFisicamenteItem(FILE **arq, char arquivo[]) {
+	tItem objeto;
+	FILE *arqTemp = fopen("itens.aux", "wb");
+	if (arqTemp == NULL)
+		return;
+	fseek(*arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, *arq))
+    	if (objeto.deletado != '*')
+			fwrite(&objeto, sizeof(objeto), 1, arqTemp);
+	fclose(*arq);
+	fclose(arqTemp);
+	remove(arquivo);
+	rename("itens.aux", arquivo);
+	*arq = abrirArquivo(arquivo);
+}
+
 ////////////////////////////////////////	CONVERTER PARA XML		///////////////////////////////////////////////////
 void criaXML_P(FILE *arqPersona) {
 	int i;
 	tPersonagem persona;
 	FILE *arqXML = fopen("personagens.xml", "w");
 
+	fseek(arqPersona, 0, SEEK_SET);
 	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
 	fprintf(arqXML, "<Personagens>\n");
 	while (fread(&persona, sizeof(persona), 1, arqPersona)) {
@@ -553,6 +624,7 @@ void criaXML_J(FILE *arqJogador) {
 	tJogador jogador;
 	FILE *arqXML = fopen("jogadores.xml", "w");
 	
+	fseek(arqJogador, 0, SEEK_SET);
 	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
 	fprintf(arqXML, "<Jogadores>\n");
 	while (fread(&jogador, sizeof(jogador), 1, arqJogador)) {
@@ -567,19 +639,20 @@ void criaXML_J(FILE *arqJogador) {
 	fclose(arqXML);
 	printf("\nExportando \"jogador.xml\"... Pressione qualquer tecla para continuar.");
 	_getch();
-}/*
-void criaXML_I(FILE *arqItens) {
-	tItens item;
+}
+void criaXML_I(FILE *arqItem) {
+	tItem item;
 	FILE *arqXML = fopen("itens.xml", "w");
-	
+
+	fseek(arqItem, 0, SEEK_SET);
 	fprintf(arqXML, "<?xml version=\"1.0\" ?> \n");
 	fprintf(arqXML, "<Itens>\n");
-	while (fread(&item, sizeof(item), 1, arqItens)) {
+	while (fread(&item, sizeof(item), 1, arqItem)) {
 		if(item.deletado != '*') {
 			fprintf(arqXML, "\t<Item>\n");
 			fprintf(arqXML, "\t\t<nome>\"%s\"</nome>\n", item.nome);
-			fprintf(arqXML, "\t\t<tier>%i</tier>\n", item.tier);
-			fprintf(arqXML, "\t\t<descricao>\"%s\"</nome>\n", item.descr);
+			fprintf(arqXML, "\t\t<tier>%c</tier>\n", item.tier);
+			fprintf(arqXML, "\t\t<descricao>\"%s\"</descricao>\n", item.descr);
 			fprintf(arqXML, "\t</Item>\n");
 		}
 	}
@@ -587,7 +660,7 @@ void criaXML_I(FILE *arqItens) {
 	fclose(arqXML);
 	printf("\nExportando \"itens.xml\"... Pressione qualquer tecla para continuar.");
 	_getch();
-}*/
+}
 //////////////////////////////////////////////////// MAIN /////////////////////////////////////////////////////////////
 int main(){
     int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 6, tam2 = 6, tamM = 6;
@@ -596,22 +669,23 @@ int main(){
 	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
     tPersonagem personagem;
 	tJogador jogador;
-	FILE *arqPersonagem, *arqJogador; //, *arqItens;
+	tItem item;
+	FILE *arqPersonagem, *arqJogador, *arqItem;
 	arqPersonagem = abrirArquivo("personagens.dat");
 	arqJogador = abrirArquivo("jogadores.dat");
-	//arqItens = abrirArquivo("itens.dat");
-	if ((arqPersonagem == NULL) || (arqJogador == NULL) /*|| (arqitens == NULL)*/) {
+	arqItem = abrirArquivo("itens.dat");
+	if ((arqPersonagem == NULL) || (arqJogador == NULL) || (arqItem == NULL)) {
 		printf("ERRO! O arquivo nao pode ser aberto!");
 		return 1;
 	}
 	do {
-		escolha1 = menu(menu1, tam1, "MENU"); // escolha de submenu
 		system("cls");
+		escolha1 = menu(menu1, tam1, "MENU"); // escolha de submenu
 		switch (escolha1){
 			case 1:	// ---------------- menu personagens ----------------
 				do {
-					escolha2 = menu(menu2, tam2, "Personagem");
 					system("cls");
+					escolha2 = menu(menu2, tam2, "Personagem");
 					switch (escolha2){
 						case 1: 
 								iniciaHab(personagem.habil);
@@ -745,8 +819,8 @@ int main(){
 				break;
 			case 2: // ---------------- menu jogador ----------------
 				do {
-					escolha2 = menu(menu2, tam2, "Jogador");
 					system("cls");
+					escolha2 = menu(menu2, tam2, "Jogador");
 					switch (escolha2) {
 						case 1: 
 							printf("\n\n---> Registro de Jogador <---\n\n");	
@@ -756,7 +830,7 @@ int main(){
 								if(consultarJogador(jogador.codigo, arqJogador) > 0){
 									printf("Codigo ja existe, tente novamente: \n");
 								}
-							}while(consultarJogador(jogador.codigo, arqJogador) > 0);
+							}while(consultarJogador(jogador.codigo, arqJogador) > 0 && (jogador.codigo < 0));
 							printf("\nDigite o nome do jogador: ");
 							fflush(stdin);
 							do{
@@ -822,43 +896,110 @@ int main(){
 				        }
 				    } while (escolha2 != 0);
 				break;
-			case 3:
+			case 3: // ---------------- menu item ----------------
 				do {
-					escolha2 = menu(menu2, tam2, "Item");
 					system("cls");
+					escolha2 = menu(menu2, tam2, "Item");
 					switch (escolha2) {
-						case 1: 
+						case 1:
 							printf("\n\n---> Registro de Item <---\n\n");	
-			
+							printf("\nDigite o nome do item: ");
+							fflush(stdin);
+							gets(item.nome);
+							while(consultarItem(item.nome, arqItem) > 0){
+								printf("\nItem ja existe, tente novamente: \n");
+								gets(item.nome);
+							}
+							printf("\nDigite o tier do item (F=Comum; E=Incomum; D=Raro; C=Muito Raro; B= Lendario; A=Artefato): ");
+							do{
+								scanf("%c", &item.tier);
+								if (item.tier == 'a')
+									item.tier = 'A';
+								if (item.tier == 'b')
+									item.tier = 'B';
+								if (item.tier == 'c')
+									item.tier = 'C';
+								if (item.tier == 'd')
+									item.tier = 'D';
+								if (item.tier == 'e')
+									item.tier = 'E';
+								if (item.tier == 'f')
+									item.tier = 'F';
+								if(item.tier != 'A' && item.tier != 'B' && item.tier != 'C' && item.tier != 'D' && item.tier != 'E' && item.tier != 'F')
+									printf("\nErro! Digite uma letra valida:");
+							} while(item.tier != 'A' && item.tier != 'B' && item.tier != 'C' && item.tier != 'D' && item.tier != 'E' && item.tier != 'F');
+							printf("\nInforme, resumidamente, a descricao do item: ");
+							fflush(stdin);
+							gets(item.descr);
+							gravarItem(item, -1, arqItem);
 							break;
 						case 2: 
 							printf("\n\n---> Listagem de Item <---\n\n");
-			
+							listarItens(arqItem);
 							break;
 						case 3: 
 							printf("\n\n---> Consulta de Item <---\n\n");
-			
+							printf("Digite o nome do Item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								item = lerItem(local, arqItem);
+								system("cls");
+								printf("-----------------------------------------------------------------INICIO\n");
+								printf("Nome: %s\nTier: %c\n", item.nome, item.tier);
+   								printf("------------------------------------\n");
+    							printf("Descricao: %-200s\n", item.descr);
+								printf("--------------------------------------------------------------------FIM\n\n");
+							}
+							else
+								printf("Item nao encontrado!\n");
 							break;
 						case 4: 
 							printf("\n\n---> Alteracao de Item <---\n\n");
-			
+							printf("Digite o nome do Item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								item = lerItem(local, arqItem);
+								printf("Nome..............: %s\n", item.nome);
+								printf("Digite o nome.....: ");
+								fflush(stdin);
+								gets(item.nome);
+								gravarItem(item, local, arqItem);
+							}
+							else
+								printf("Codigo nao encontrado!\n");
 							break;
 						case 5: 
 							printf("\n\n---> Exclusao de Item <---\n\n");
-					}
-				}while (escolha2 != 0);
+							printf("Digite o nome do Item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0){
+								excluirItem(local, arqItem);
+								printf("Exclusao concluida\n");
+							}else
+								printf("Item nao encontrado!\n");
+							break;
+				        }
+				    } while (escolha2 != 0);
 				break;
 			case 4:
 				excluirFisicamenteJogador(&arqJogador, "jogadores.dat");
 				excluirFisicamentePersonagem(&arqPersonagem, "personagens.dat");
+				excluirFisicamenteItem(&arqItem, "itens.dat");
 				break;
 			case 5:
 				criaXML_P(arqPersonagem);
-				criaXML_J(arqJogador);				
+				criaXML_J(arqJogador);
+				criaXML_I(arqItem);				
 		}
 	}while(escolha1 != 0);
 	fclose(arqPersonagem);
 	fclose(arqJogador);
-	//fclose(arqItens);
+	fclose(arqItem);
     return 0;
 }
