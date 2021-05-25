@@ -822,12 +822,12 @@ int main(){
 							gets(item.nome);
 							local = consultarItem(item.nome, arqItem);
 							if (local > 0) {
-								jogador = lerJogador(local, arqJogador);
-								printf("Nome..............: %s\n", jogador.nome);
+								item = lerItem(local, arqItem);
+								printf("Nome..............: %s\n", item.nome);
 								printf("Digite o nome.....: ");
 								fflush(stdin);
-								gets(jogador.nome);
-								gravarJogador(jogador, local, arqJogador);
+								gets(item.nome);
+								gravarItem(item, local, arqItem);
 							}
 							else
 								printf("Codigo nao encontrado!\n");
