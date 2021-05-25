@@ -284,7 +284,7 @@ int menu(char *texto[], int tam, char string[]){
 	return esc - 48;
 }
 //-----------------------MANIPULACOES DE ARQUIVO (CRUDS)-----------------------------------------------------------------------
-//CHECK
+//Funcao generica pra abertura de arquivos
 FILE *abrirArquivo(char arquivo[]){
 	FILE *arq = fopen(arquivo, "r+b");
 	if(arq == NULL)
@@ -293,7 +293,6 @@ FILE *abrirArquivo(char arquivo[]){
 }
 
 // - - - - - Jogadores - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Aparentemente funcionando todos
 ////////////// LER O ARQUIVO DE JOGADORES ////////////////////////////////////////////////////////////////////////////////////
 tJogador lerJogador(int local, FILE *arq) {
 	tJogador player;
@@ -317,7 +316,7 @@ int consultarJogador(int cod, FILE *arq) {
 void listarJogadores(FILE *arq) {
 	tJogador player;
 	fseek(arq, 0, SEEK_SET);
-   	printf("Coigo\tNOME\n");
+   	printf("Codigo\tNOME\n");
    	printf("------------------------------------\n");
     while (fread(&player, sizeof(player), 1, arq))
     	if (player.deletado != '*')
@@ -333,7 +332,7 @@ void gravarJogador(tJogador player, int local, FILE *arq) {
 		fseek(arq, (local-1)*sizeof(player), SEEK_SET);
 	fwrite(&player, sizeof(player), 1, arq);
 }
-////////////// EXCLUI OS JOGADORES DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+////////////// MARCA O JOGADOR COM A FLAG DE EXCLUSAO ////////////////////////////////////////////////////////////////////////////////////
 void excluirJogador(int local, FILE *arq) {
 	tJogador player;
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
@@ -343,6 +342,7 @@ void excluirJogador(int local, FILE *arq) {
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
 	fwrite(&player, sizeof(player), 1, arq);
 }
+////////////// EXCLUI OS JOGADORES DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	tJogador player;
 	FILE *arqTemp = fopen("jogadores.aux", "wb");
