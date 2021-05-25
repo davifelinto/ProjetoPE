@@ -25,7 +25,7 @@ typedef struct {
 	char tier;
 	char descr[200];
 	char deletado; // *=deletado ' '=nao deletado
-}tItens;
+}tItem;
 typedef struct {
 	int codigo; // chave primaria
 	char nome[30];
@@ -283,6 +283,7 @@ int menu(char *texto[], int tam, char string[]){
 	
 	return esc - 48;
 }
+
 //-----------------------MANIPULACOES DE ARQUIVO (CRUDS)-----------------------------------------------------------------------
 //Funcao generica pra abertura de arquivos
 FILE *abrirArquivo(char arquivo[]){
@@ -293,7 +294,7 @@ FILE *abrirArquivo(char arquivo[]){
 }
 
 // - - - - - Jogadores - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-////////////// LER O ARQUIVO DE JOGADORES ////////////////////////////////////////////////////////////////////////////////////
+////////////// LER UM JOGADOR DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 tJogador lerJogador(int local, FILE *arq) {
 	tJogador player;
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
@@ -342,7 +343,7 @@ void excluirJogador(int local, FILE *arq) {
 	fseek(arq, (local-1)*sizeof(player), SEEK_SET);
 	fwrite(&player, sizeof(player), 1, arq);
 }
-////////////// EXCLUI OS JOGADORES DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+////////////// EXCLUI O JOGADOR DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	tJogador player;
 	FILE *arqTemp = fopen("jogadores.aux", "wb");
@@ -358,14 +359,16 @@ void excluirFisicamenteJogador(FILE **arq, char arquivo[]) {
 	rename("jogadores.aux", arquivo);
 	*arq = abrirArquivo(arquivo);
 }
+
 // - - - - - PERSONAGENS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+////////////// LER UM PERSONAGEM DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 tPersonagem lerPersonagem(int local, FILE *arq){
 	tPersonagem persona;
 	fseek(arq, (local-1)*sizeof(persona), SEEK_SET);
 	fread(&persona, sizeof(persona), 1, arq);
 	return persona;
 }
-
+////////////// ESCREVE O PERSONAGEM NO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 void salvarPersonagem(tPersonagem persona, int local, FILE *arq){
 	if (local <= 0) {
 		persona.deletado = ' ';
@@ -375,7 +378,7 @@ void salvarPersonagem(tPersonagem persona, int local, FILE *arq){
 		fseek(arq, (local-1)*sizeof (persona), SEEK_SET);
 	fwrite(&persona, sizeof (persona), 1, arq);
 }
-
+////////////// MOSTRA O PERSONAGEM NO TERMINAL ////////////////////////////////////////////////////////////////////////////////////
 void mostrarPersonagem(tPersonagem persona, tJogador player) {
 	int mod[6], i;
 
@@ -407,7 +410,7 @@ void mostrarPersonagem(tPersonagem persona, tJogador player) {
 		printf("--------------------------------------------------------------------FIM\n");
 	}
 }
-
+////////////// LISTAR OS PERSONAGENS DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 void listarPersonagems(FILE *arqPersona, FILE *arqJogador) {
 	tPersonagem persona;
 	tJogador player;
@@ -422,6 +425,7 @@ void listarPersonagems(FILE *arqPersona, FILE *arqJogador) {
 	printf("\n\n\nPressione qualquer tecla para continuar.");
 	_getch();
 }
+////////////// CONSULTAR O ARQUIVO DE PERSONAGENS ////////////////////////////////////////////////////////////////////////////////////
 int consultarPersonagem(char nome[], FILE *arq) {
 	tPersonagem persona;
 	int local=0;
@@ -433,6 +437,7 @@ int consultarPersonagem(char nome[], FILE *arq) {
 	}
 	return -1;
 }
+////////////// MARCA O PERSONAGEM COM A FLAG DE EXCLUSAO ////////////////////////////////////////////////////////////////////////////////////
 void excluirPersonagem(int local, FILE *arq) {
 	tPersonagem persona;
 	fseek(arq, (local-1)*sizeof(persona), SEEK_SET);
@@ -453,6 +458,7 @@ void excluiPersonagemLigado(int cod, FILE *arq) {
     		excluirPersonagem(local, arq);
 	}
 }
+////////////// EXCLUI O PERSONAGEM DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
 void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	tPersonagem persona;
 	FILE *arqTemp = fopen("personagens.aux", "wb");
@@ -469,20 +475,91 @@ void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	*arq = abrirArquivo(arquivo);
 }
 
+// - - - - - ITENS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+////////////// LER UM JOGADOR DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+tItem lerItem(int local, FILE *arq) {
+	tItem objeto;
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+    fread(&objeto, sizeof(objeto), 1, arq);
+ 	return objeto;
+}
+////////////// CONSULTAR O ARQUIVO DE ITENS ////////////////////////////////////////////////////////////////////////////////////
+int consultarItem(char nome[], FILE *arq) {
+	tItem objeto;
+	int local=0;
+	fseek(arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, arq)) {
+    	local++;
+    	if ((strcmp(objeto.nome, nome) == 0) && (objeto.deletado != '*'))
+    		return local;
+	}
+	return -1;
+}
+////////////// LISTAR OS ITENS DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void listarItens(FILE *arq) {
+	tItem objeto;
+	fseek(arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, arq))
+    	if (objeto.deletado != '*'){
+			printf("-----------------------------------------------------------------INICIO\n");
+			printf("Nome: %s\nTier: %c\n", objeto.nome, objeto.tier);
+   			printf("------------------------------------\n");
+    		printf("Descricao: %-200s\n", objeto.descr);
+			printf("--------------------------------------------------------------------FIM\n\n");
+		}
+}
+////////////// GRAVA OS OBJETOS NO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void gravarJogador(tItem objeto, int local, FILE *arq) {
+	if (local <= 0) {
+		objeto.deletado = ' ';
+		fseek(arq, 0, SEEK_END);
+	}
+	else
+		fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+	fwrite(&objeto, sizeof(objeto), 1, arq);
+}
+////////////// MARCA O ITEM COM A FLAG DE EXCLUSAO ////////////////////////////////////////////////////////////////////////////////////
+void excluirItem(int local, FILE *arq) {
+	tItem objeto;
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+    fread(&objeto, sizeof(objeto), 1, arq);
+    objeto.deletado = '*';
+	fseek(arq, (local-1)*sizeof(objeto), SEEK_SET);
+	fwrite(&objeto, sizeof(objeto), 1, arq);
+}
+////////////// EXCLUI O ITEM DO ARQUIVO ////////////////////////////////////////////////////////////////////////////////////
+void excluirFisicamenteItem(FILE **arq, char arquivo[]) {
+	tItem objeto;
+	FILE *arqTemp = fopen("itens.aux", "wb");
+	if (arqTemp == NULL)
+		return;
+	fseek(*arq, 0, SEEK_SET);
+    while (fread(&objeto, sizeof(objeto), 1, *arq))
+    	if (objeto.deletado != '*')
+			fwrite(&objeto, sizeof(objeto), 1, arqTemp);
+	fclose(*arq);
+	fclose(arqTemp);
+	remove(arquivo);
+	rename("itens.aux", arquivo);
+	*arq = abrirArquivo(arquivo);
+}
+
+
 int main(){
     int escolha1, escolha2, escolhaM, codigo, local;
-    char *menu1[]= {"Personagem", "Jogador", "Itens", "Esvaziar lixeira", "Sair"};
+    char *menu1[]= {"Personagem", "Jogador", "Item", "Esvaziar lixeira", "Sair"};
 	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar","Excluir", "Voltar"};
 	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
 	int tam1 = 5, tam2 = 6, tamM = 6;
     tPersonagem personagem;
 	tJogador jogador;
-	FILE *arqPersonagem, *arqJogador; //, *arqItens;
+	tItem item;
+	FILE *arqPersonagem, *arqJogador, *arqItem;
 
 	arqPersonagem = abrirArquivo("personagens.dat");
 	arqJogador = abrirArquivo("jogadores.dat");
-	//arqItens = abrirArquivo("itens.dat");
-	if ((arqPersonagem == NULL) || (arqJogador == NULL) /*|| (arqitens == NULL)*/) {
+	arqItem = abrirArquivo("itens.dat");
+	if ((arqPersonagem == NULL) || (arqJogador == NULL) || (arqItem == NULL)) {
 		printf("ERRO! O arquivo nao pode ser aberto!");
 		return 1;
 	}
@@ -679,8 +756,102 @@ int main(){
 				        }
 				    } while (escolha2 != 0);
 				break;
-			case 3:
-				// menu itens
+			case 3: // ---------------- menu item ----------------
+				do {
+					escolha2 = menu(menu2, tam2, "Item");
+					system("cls");
+					switch (escolha2) {
+						case 1:
+							printf("\n\n---> Registro de Item <---\n\n");	
+							printf("\nDigite o nome do item: ");
+							fflush(stdin);
+							gets(item.nome);
+							while(consultarItem(item.nome, arqItem) > 0){
+								printf("\nItem ja existe, tente novamente: \n");
+								gets(item.nome);
+							}
+							printf("\nDigite o tier do item (F=Comum; E=Incomum; D=Raro; C=Muito Raro; B= Lendario; A=Artefato): ");
+							do{
+								scanf("%c", &item.tier);
+								if (item.tier == 'a')
+									item.tier = 'A';
+								if (item.tier == 'b')
+									item.tier = 'B';
+								if (item.tier == 'c')
+									item.tier = 'C';
+								if (item.tier == 'd')
+									item.tier = 'D';
+								if (item.tier == 'e')
+									item.tier = 'E';
+								if (item.tier == 'f')
+									item.tier = 'F';
+								if(item.tier != 'A' || item.tier != 'B' || item.tier != 'C' || item.tier != 'D' || item.tier != 'E' || item.tier != 'F')
+									printf("\nErro! Digite uma letra valida:");
+							} while(item.tier != 'A' || item.tier != 'B' || item.tier != 'C' || item.tier != 'D' || item.tier != 'E' || item.tier != 'F');
+							printf("\nInforme, resumidamente, a descricao do item: ");
+							fflush(stdin);
+							gets(item.descr);
+							gravarItem(item, -1, arqItem);
+							break;
+						case 2: 
+							printf("\n\n---> Listagem de Item <---\n\n");
+							listarItens(arqItem);
+							break;
+						case 3: 
+							printf("\n\n---> Consulta de Item <---\n\n");
+							printf("Digite o nome do Item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								item = lerItem(local, arqItem);
+								system("cls");
+								printf("-----------------------------------------------------------------INICIO\n");
+								printf("Nome: %s\nTier: %c\n", item.nome, item.tier);
+   								printf("------------------------------------\n");
+    							printf("Descricao: %-200s\n", item.descr);
+								printf("--------------------------------------------------------------------FIM\n\n");
+							}
+							else
+								printf("Item nao encontrado!\n");
+							break;
+						case 4: 
+							printf("\n\n---> Alteracao de Item <---\n\n");
+							printf("Digite o nome do Item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								jogador = lerJogador(local, arqJogador);
+								printf("Nome..............: %s\n", jogador.nome);
+								printf("Digite o nome.....: ");
+								fflush(stdin);
+								gets(jogador.nome);
+								gravarJogador(jogador, local, arqJogador);
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+							break;
+						case 5: 
+							printf("\n\n---> Exclusao de Jogador <---\n\n");
+							printf("Digite o codigo: ");
+							scanf("%d", &codigo);
+							local = consultarJogador(codigo, arqJogador);
+							if (local > 0){
+								printf("Deseja continuar? Personagens ligados a esse jogador serao excluidos\n");
+								printf("\t\t(Pressione enter para confirmar)");
+								if(_getch() == 13){
+									excluiPersonagemLigado(codigo, arqPersonagem);
+									excluirJogador(local, arqJogador);
+									printf("Exclusao concluida");
+								}else{
+									printf("\nVoltando...");
+								}
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+				        }
+				    } while (escolha2 != 0);
 				break;
 			case 4:
 				break;
@@ -688,5 +859,6 @@ int main(){
 	}while(escolha1 != 0);
 	fclose(arqPersonagem);
 	fclose(arqJogador);
+	fclose(arqItem);
     return 0;
 }
