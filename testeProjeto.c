@@ -194,7 +194,7 @@ void valorDePericia (skill pericia[], skill habilidade[], int lvl){
 const char * escolheClasse(){
 	char setas;
 	int tam = 12, opcao = 0, i;
-	//Se for char, a variavel Ã© deletada antes de retornar para main
+	//Se for char, a variavel é deletada antes de retornar para main
 	static char classe[12][20] = {"Barbaro", "Bardo", "Bruxo", "Clerigo", "Druida",
 	 "Feiticeiro", 	"Guardiao", "Guerreiro", "Ladino",	"Mago", "Monge", "Paladino"};
 	printf("Classe do personagem: \n");
@@ -217,11 +217,11 @@ const char * escolheClasse(){
 	
 	return (classe[opcao]);
 }
-//---------------------ESCOLHE A RAÃ‡A ---------------------------------------------------------------------------------------
+//---------------------ESCOLHE A RAÇA ---------------------------------------------------------------------------------------
 
 const char * escolheRaca(){
 	char setas;
-	//Se for char, a variavel Ã© deletada antes de retornar para main
+	//Se for char, a variavel é deletada antes de retornar para main
 	static char raca[14][20] = {"Anao da Colina", "Anao da Montanha", "Draconato", "Elfo (Alto)",  "Elfo (Drow)", "Elfo da Floresta",
 	"Gnomo da Floresta", "Gnomo das Rochas", "Halfling Pes Leves", "Halfling Robusto", "Humano", "Meio-Elfo",	"Meio-Orc", "Tieflings"};
 	int tam = 14, opcao = 0, i;	
@@ -293,7 +293,7 @@ int escolheJogador(FILE *arq){
 			if(opcao == -1) opcao = i-1;
 		}
 	}while(setas != 13);
-	fseek(arq, (sizeof(jogador)*opcao), SEEK_SET);
+	fseek(arq, (sizeof(jogador)*(opcao)), SEEK_SET);
 	fread(&jogador, sizeof(jogador), 1, arq);
 	return jogador.codigo;
 }
@@ -484,14 +484,17 @@ void excluirPersonagem(int local, FILE *arq) {
 	fwrite(&persona, sizeof(persona), 1, arq);
 }
 //////////////////////// EXCLUI O PERSONAGEM LIGADO AO JOGADOR QUE VAI SER DELETADO //////////////////////////////////////////
-void excluiPersonagemLigado(int cod, FILE *arq) {
+void excluiPersonagemLigado(int cod, FILE *arq) {//PROBLEMA AQUI////////////////////////////////////////////////////////////////////////////////////////////////////////
 	tPersonagem persona;
 	int local=0;
 	fseek(arq, 0, SEEK_SET);
     while (fread(&persona, sizeof(persona), 1, arq)) {
-    	local++;
-    	if ((persona.codJogador == cod) && (persona.deletado != '*'))
+    	local++;	
+		if ((cod == persona.codJogador) && (persona.deletado != '*')){
     		excluirPersonagem(local, arq);
+    		printf("%s deletado\n", persona.nome);
+    		//QUANDO LE O ULTIMO PERSONAGEM TA CRIANDO O MESMO PERSONAGEM INFINITAMENTE
+		}
 	}
 }
 void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
@@ -588,7 +591,7 @@ void criaXML_I(FILE *arqItens) {
 //////////////////////////////////////////////////// MAIN /////////////////////////////////////////////////////////////
 int main(){
     int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 6, tam2 = 6, tamM = 6;
-    char *menu1[]= {"Personagem", "Jogador", "Itens", "Esvaziar lixeira", "Exportar dados para XML", "Sair"};
+    char *menu1[]= {"Personagem", "Jogador", "Item", "Esvaziar lixeira", "Exportar dados para XML", "Sair"};
 	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar", "Excluir", "Voltar"};
 	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
     tPersonagem personagem;
@@ -820,7 +823,30 @@ int main(){
 				    } while (escolha2 != 0);
 				break;
 			case 3:
-				// menu itens
+				do {
+					escolha2 = menu(menu2, tam2, "Item");
+					system("cls");
+					switch (escolha2) {
+						case 1: 
+							printf("\n\n---> Registro de Item <---\n\n");	
+			
+							break;
+						case 2: 
+							printf("\n\n---> Listagem de Item <---\n\n");
+			
+							break;
+						case 3: 
+							printf("\n\n---> Consulta de Item <---\n\n");
+			
+							break;
+						case 4: 
+							printf("\n\n---> Alteracao de Item <---\n\n");
+			
+							break;
+						case 5: 
+							printf("\n\n---> Exclusao de Item <---\n\n");
+					}
+				}while (escolha2 != 0);
 				break;
 			case 4:
 				excluirFisicamenteJogador(&arqJogador, "jogadores.dat");
