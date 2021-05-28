@@ -310,6 +310,12 @@ int menu(char *texto[], int tam, char string[]){
 	
 	return esc - 48;
 }
+
+void pausa(){
+	printf("\n\n\nPressione qualquer tecla para continuar.");
+	_getch();
+}
+
 //-----------------------MANIPULACOES DE ARQUIVO (CRUDS)-----------------------------------------------------------------------
 //CHECK
 FILE *abrirArquivo(char arquivo[]){
@@ -402,6 +408,7 @@ void salvarPersonagem(tPersonagem persona, int local, FILE *arq){
 		fseek(arq, (local-1)*sizeof (persona), SEEK_SET);
 	fwrite(&persona, sizeof (persona), 1, arq);
 }
+////////////// MOSTRA OS PERSONAGENS NO TERMINAL ////////////////////////////////////////////////////////////////////////////////////
 void mostrarPersonagem(tPersonagem persona, tJogador player) {
 	int mod[6], i, curX, curY, printou = 0;
 	aleaBackground();
@@ -460,9 +467,9 @@ void listarPersonagems(FILE *arqPersona, FILE *arqJogador) {
 			mostrarPersonagem(persona, player);
 		}
 	}
-	printf("\n\n\nPressione qualquer tecla para continuar.");
-	_getch();
+	pausa();
 }
+
 int consultarPersonagem(char nome[], FILE *arq) {
 	tPersonagem persona;
 	int local=0;
@@ -474,13 +481,13 @@ int consultarPersonagem(char nome[], FILE *arq) {
 	}
 	return -1;
 }
+
 void excluirPersonagem(int local, FILE *arq) {
 	tPersonagem persona;
 	fseek(arq, (local-1)*sizeof(persona), SEEK_SET);
     fread(&persona, sizeof(persona), 1, arq);
     persona.deletado = '*';
 	fseek(arq, (local-1)*sizeof(persona), SEEK_SET);
-	//fseek(arq, -sizeof(persona), SEEK_CUR); // se nao funcionar trocar por essa
 	fwrite(&persona, sizeof(persona), 1, arq);
 }
 //////////////////////// EXCLUI O PERSONAGEM LIGADO AO JOGADOR QUE VAI SER DELETADO //////////////////////////////////////////
@@ -497,6 +504,7 @@ void excluiPersonagemLigado(int cod, FILE *arq) {
 		}
 	}
 }
+
 void excluirFisicamentePersonagem(FILE **arq, char arquivo[]) {
 	tPersonagem persona;
 	FILE *arqTemp = fopen("personagens.aux", "wb");
@@ -688,6 +696,7 @@ int main(){
 					escolha2 = menu(menu2, tam2, "Personagem");
 					switch (escolha2){
 						case 1: 
+								system("cls");
 								iniciaHab(personagem.habil);
 								iniciaPericias(personagem.pericias);
 								printf("\t\t\tAtencao!!! Use %c e %c para alternar e Enter para confirmar\n", 24, 25);
@@ -709,7 +718,9 @@ int main(){
 									}
 								}while(consultarPersonagem(personagem.nome, arqPersonagem) > 0 || strcmp(personagem.nome, "") == 0);
 								textcolor(LIGHTGRAY);
+								printf("\n");
 								strcpy(personagem.raca, escolheRaca());
+								printf("\n");
 								strcpy(personagem.classe, escolheClasse());
 								printf("\nInforme o nivel do personagem: ");
 								do{
@@ -739,13 +750,17 @@ int main(){
 								textcolor(CORESCRITA);
 								gets(personagem.notas);
 								textcolor(LIGHTGRAY);
+								printf("\nO personagem foi salvo!");
+								pausa();
 								salvarPersonagem(personagem, -1, arqPersonagem);
 							break;
 						case 2:
+							system("cls");
 							printf("\n\n---> Listagem de Personagem <---\n\n");
 							listarPersonagems(arqPersonagem, arqJogador);
 							break;
 						case 3: 
+							system("cls");
 							printf("\n\n---> Consulta de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
@@ -756,11 +771,14 @@ int main(){
 								local = consultarJogador(personagem.codJogador, arqJogador);
 								jogador = lerJogador(local, arqJogador);
 								mostrarPersonagem(personagem, jogador);
+								pausa();
 							}
 							else
 								printf("Personagem nao encontrado!\n");
+								pausa();
 							break;
 						case 4:
+							system("cls");
 							printf("\n\n---> Alteracao de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
@@ -798,11 +816,15 @@ int main(){
 									}
 								}while(escolhaM != 0);
 								salvarPersonagem(personagem, local, arqPersonagem);
+								printf("\nAs alteracoes foram salvas!");
+								pausa();
 							}
 							else
 								printf("Personagem nao encontrado!\n");
+								pausa();
 							break;
 				        case 5:
+							system("cls");
 							printf("\n\n---> Exclusao de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
@@ -811,8 +833,10 @@ int main(){
 							if (local > 0){
 								excluirPersonagem(local, arqPersonagem);
 								printf("Exclusao concluida\n");
+								pausa();
 							}else
 								printf("Personagem nao encontrado!\n");
+								pausa();
 							break;
 					}
 				}while (escolha2 != 0);
@@ -822,7 +846,8 @@ int main(){
 					system("cls");
 					escolha2 = menu(menu2, tam2, "Jogador");
 					switch (escolha2) {
-						case 1: 
+						case 1:
+							system("cls");
 							printf("\n\n---> Registro de Jogador <---\n\n");	
 							printf("Digite o codigo do jogador: ");
 							do{
@@ -840,12 +865,17 @@ int main(){
 								}
 							}while(strcmp(jogador.nome, "") == 0);
 							gravarJogador(jogador, -1, arqJogador);
+							printf("\nO jogador foi salvo!");
+							pausa();
 							break;
-						case 2: 
+						case 2:
+							system("cls");
 							printf("\n\n---> Listagem de Jogador <---\n\n");
 							listarJogadores(arqJogador);
+							pausa();
 							break;
-						case 3: 
+						case 3:
+							system("cls");
 							printf("\n\n---> Consulta de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
@@ -856,8 +886,10 @@ int main(){
 							}
 							else
 								printf("Codigo nao encontrado!\n");
+							pausa();
 							break;
-						case 4: 
+						case 4:
+							system("cls");
 							printf("\n\n---> Alteracao de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
@@ -872,8 +904,10 @@ int main(){
 							}
 							else
 								printf("Codigo nao encontrado!\n");
+							pausa();
 							break;
-						case 5: 
+						case 5:
+							system("cls");
 							printf("\n\n---> Exclusao de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
@@ -893,6 +927,8 @@ int main(){
 							}
 							else
 								printf("Codigo nao encontrado!\n");
+
+							pausa();
 				        }
 				    } while (escolha2 != 0);
 				break;
@@ -902,6 +938,7 @@ int main(){
 					escolha2 = menu(menu2, tam2, "Item");
 					switch (escolha2) {
 						case 1:
+							system("cls");
 							printf("\n\n---> Registro de Item <---\n\n");	
 							printf("\nDigite o nome do item: ");
 							fflush(stdin);
@@ -932,12 +969,17 @@ int main(){
 							fflush(stdin);
 							gets(item.descr);
 							gravarItem(item, -1, arqItem);
+							printf("\nO item foi salvo!");
+							pausa();
 							break;
-						case 2: 
+						case 2:
+							system("cls");
 							printf("\n\n---> Listagem de Item <---\n\n");
 							listarItens(arqItem);
+							pausa();
 							break;
-						case 3: 
+						case 3:
+							system("cls");
 							printf("\n\n---> Consulta de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
@@ -954,8 +996,10 @@ int main(){
 							}
 							else
 								printf("Item nao encontrado!\n");
+							pausa();
 							break;
-						case 4: 
+						case 4:
+							system("cls");
 							printf("\n\n---> Alteracao de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
@@ -968,11 +1012,14 @@ int main(){
 								fflush(stdin);
 								gets(item.nome);
 								gravarItem(item, local, arqItem);
+								printf("\nItem alterado com sucesso!");
 							}
 							else
 								printf("Codigo nao encontrado!\n");
+							pausa();
 							break;
-						case 5: 
+						case 5:
+							system("cls");
 							printf("\n\n---> Exclusao de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
@@ -983,6 +1030,7 @@ int main(){
 								printf("Exclusao concluida\n");
 							}else
 								printf("Item nao encontrado!\n");
+							pausa();
 							break;
 				        }
 				    } while (escolha2 != 0);
