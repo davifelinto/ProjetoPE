@@ -401,7 +401,7 @@ void alteraString(char *TEXT){
 int menu(char *texto[], int tam, char string[]){
 	int opcao = 0, i, getT;
 	char esc;
-	printf("\n\n*** %s ***\n\n", string);
+	printf("\n*** %s ***\n\n", string);
 	for (i = 0; i < tam; ++i) {
 		getT = (i+1) - (((i+1) / tam)*(i+1));
 		printf("%i. %s\n", getT,texto[i]);
@@ -858,7 +858,7 @@ int main(){
 							iniciaHab(personagem.habil);
 							iniciaPericias(personagem.pericias);
 							printf("\t\t\tAtencao!!! Use %c e %c para alternar e Enter para confirmar\n", 24, 25);
-							printf("---> Inclusao de Personagem <---\n\n");
+							printf("\n---> Inclusao de Personagem <---\n\n");
 							jogador.codigo = escolheJogador(arqJogador);
 							personagem.codJogador = jogador.codigo;
 							printf("\nDigite o nome do personagem: \n");
@@ -914,13 +914,13 @@ int main(){
 							break;
 						case 2:
 							clear_screen();
-							printf("---> Listagem de Personagem <---\n\n");
+							printf("\n---> Listagem de Personagem <---\n\n");
 							listarPersonagems(arqPersonagem, arqJogador);
 							pausa();
 							break;
 						case 3: 
 							clear_screen();
-							printf("---> Consulta de Personagem <---\n\n");
+							printf("\n---> Consulta de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
 							gets(personagem.nome);
@@ -939,7 +939,7 @@ int main(){
 							break;
 						case 4:
 							clear_screen();
-							printf("---> Alteracao de Personagem <---\n\n");
+							printf("\n---> Alteracao de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
 							gets(personagem.nome);
@@ -982,7 +982,7 @@ int main(){
 							break;
 				        case 5:
 							clear_screen();
-							printf("---> Exclusao de Personagem <---\n\n");
+							printf("\n---> Exclusao de Personagem <---\n\n");
 							printf("Digite o nome do personagem: ");
 							fflush(stdin);
 							gets(personagem.nome);
@@ -1004,7 +1004,7 @@ int main(){
 					switch (escolha2) {
 						case 1:
 							clear_screen();
-							printf("---> Registro de Jogador <---\n\n");	
+							printf("\n---> Registro de Jogador <---\n\n");	
 							fseek(arqJogador, -(int)sizeof(jogador), SEEK_END);
 							if(!fread(&jogador, sizeof(jogador), 1, arqJogador)){
 								jogador.codigo = 1;
@@ -1026,13 +1026,13 @@ int main(){
 							break;
 						case 2:
 							clear_screen();
-							printf("---> Listagem de Jogador <---\n\n");
+							printf("\n---> Listagem de Jogador <---\n\n");
 							listarJogadores(arqJogador, arqPersonagem);
 							pausa();
 							break;
 						case 3:
 							clear_screen();
-							printf("---> Consulta de Jogador <---\n\n");
+							printf("\n---> Consulta de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
 							local = consultarJogador(codigo, arqJogador);
@@ -1058,7 +1058,7 @@ int main(){
 							break;
 						case 4:
 							clear_screen();
-							printf("---> Alteracao de Jogador <---\n\n");
+							printf("\n---> Alteracao de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
 							local = consultarJogador(codigo, arqJogador);
@@ -1076,7 +1076,7 @@ int main(){
 							break;
 						case 5:
 							clear_screen();
-							printf("---> Exclusao de Jogador <---\n\n");
+							printf("\n---> Exclusao de Jogador <---\n\n");
 							printf("Digite o codigo: ");
 							scanf("%d", &codigo);
 							local = consultarJogador(codigo, arqJogador);
@@ -1106,7 +1106,7 @@ int main(){
 					switch (escolha2) {
 						case 1:
 							clear_screen();
-							printf("---> Registro de Item <---\n\n");	
+							printf("\n---> Registro de Item <---\n\n");	
 							printf("\nDigite o nome do item: ");
 							fflush(stdin);
 							gets(item.nome);
@@ -1130,13 +1130,13 @@ int main(){
 							break;
 						case 2:
 							clear_screen();
-							printf("---> Listagem de Item <---\n\n");
+							printf("\n---> Listagem de Item <---\n\n");
 							listarItens(arqItem);
 							pausa();
 							break;
 						case 3:
 							clear_screen();
-							printf("---> Consulta de Item <---\n\n");
+							printf("\n---> Consulta de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
 							gets(item.nome);
@@ -1153,7 +1153,7 @@ int main(){
 							break;
 						case 4:
 							clear_screen();
-							printf("---> Alteracao de Item <---\n\n");
+							printf("\n---> Alteracao de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
 							gets(item.nome);
@@ -1175,7 +1175,7 @@ int main(){
 							break;
 						case 5:
 							clear_screen();
-							printf("---> Exclusao de Item <---\n\n");
+							printf("\n---> Exclusao de Item <---\n\n");
 							printf("Digite o nome do Item: ");
 							fflush(stdin);
 							gets(item.nome);
