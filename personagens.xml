@@ -1,117 +1,13 @@
 <?xml version="1.0" ?> 
 <Personagens>
 	<Personagem>
-		<nome>"Jerson"</nome>
-		<raca>"Meio-Elfo"</raca>
-		<classe>"Bardo"</classe>
-		<nivel>5</nivel>
-		<habilidade>
-			<nome>"Forca"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<habilidade>
-			<nome>"Destreza"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<habilidade>
-			<nome>"Constituicao"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<habilidade>
-			<nome>"Inteligencia"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<habilidade>
-			<nome>"Sabedoria"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<habilidade>
-			<nome>"Carisma"</nome>
-			<valor>10</valor>
-		</habilidade>
-		<pericia>
-			<nome>"Atletismo"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Acrobacia"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Furtividade"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Prestidigitacao"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Arcanismo"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Historia"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Investigacao"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Natureza"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Religiao"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Adestrar Animais"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Intuicao"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Medicina"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Percepcao"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Sobrevivencia"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Atuacao"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Enganacao"</nome>
-			<valor>0</valor>
-		</pericia>
-		<pericia>
-			<nome>"Intimidacao"</nome>
-			<valor>3</valor>
-		</pericia>
-		<pericia>
-			<nome>"Persuasao"</nome>
-			<valor>0</valor>
-		</pericia>
-		<notas>"Sei la"</notas>
-		<codJogador>1</codJogador>
-	</Personagem>
-	<Personagem>
 		<nome>"Shostner"</nome>
 		<raca>"Humano"</raca>
 		<classe>"Ladino"</classe>
-		<nivel>10</nivel>
+		<nivel>11</nivel>
 		<habilidade>
 			<nome>"Forca"</nome>
-			<valor>13</valor>
+			<valor>14</valor>
 		</habilidade>
 		<habilidade>
 			<nome>"Destreza"</nome>
@@ -135,7 +31,7 @@
 		</habilidade>
 		<pericia>
 			<nome>"Atletismo"</nome>
-			<valor>1</valor>
+			<valor>6</valor>
 		</pericia>
 		<pericia>
 			<nome>"Acrobacia"</nome>
@@ -199,13 +95,221 @@
 		</pericia>
 		<pericia>
 			<nome>"Intimidacao"</nome>
-			<valor>7</valor>
+			<valor>3</valor>
 		</pericia>
 		<pericia>
 			<nome>"Persuasao"</nome>
+			<valor>3</valor>
+		</pericia>
+		<notas>"Refrigerante Sproc-Maca, Bermuda camuflada serie especial Steve Magal."</notas>
+		<codJogador>2</codJogador>
+	</Personagem>
+	<Personagem>
+		<nome>"Kleber"</nome>
+		<raca>"Meio-Elfo"</raca>
+		<classe>"Monge"</classe>
+		<nivel>15</nivel>
+		<habilidade>
+			<nome>"Forca"</nome>
+			<valor>18</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Destreza"</nome>
+			<valor>20</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Constituicao"</nome>
+			<valor>18</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Inteligencia"</nome>
+			<valor>18</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Sabedoria"</nome>
+			<valor>20</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Carisma"</nome>
+			<valor>18</valor>
+		</habilidade>
+		<pericia>
+			<nome>"Atletismo"</nome>
+			<valor>14</valor>
+		</pericia>
+		<pericia>
+			<nome>"Acrobacia"</nome>
+			<valor>15</valor>
+		</pericia>
+		<pericia>
+			<nome>"Furtividade"</nome>
+			<valor>15</valor>
+		</pericia>
+		<pericia>
+			<nome>"Prestidigitacao"</nome>
+			<valor>10</valor>
+		</pericia>
+		<pericia>
+			<nome>"Arcanismo"</nome>
+			<valor>14</valor>
+		</pericia>
+		<pericia>
+			<nome>"Historia"</nome>
+			<valor>14</valor>
+		</pericia>
+		<pericia>
+			<nome>"Investigacao"</nome>
+			<valor>9</valor>
+		</pericia>
+		<pericia>
+			<nome>"Natureza"</nome>
+			<valor>9</valor>
+		</pericia>
+		<pericia>
+			<nome>"Religiao"</nome>
+			<valor>9</valor>
+		</pericia>
+		<pericia>
+			<nome>"Adestrar Animais"</nome>
+			<valor>10</valor>
+		</pericia>
+		<pericia>
+			<nome>"Intuicao"</nome>
+			<valor>10</valor>
+		</pericia>
+		<pericia>
+			<nome>"Medicina"</nome>
+			<valor>10</valor>
+		</pericia>
+		<pericia>
+			<nome>"Percepcao"</nome>
+			<valor>15</valor>
+		</pericia>
+		<pericia>
+			<nome>"Sobrevivencia"</nome>
+			<valor>15</valor>
+		</pericia>
+		<pericia>
+			<nome>"Atuacao"</nome>
+			<valor>9</valor>
+		</pericia>
+		<pericia>
+			<nome>"Enganacao"</nome>
+			<valor>14</valor>
+		</pericia>
+		<pericia>
+			<nome>"Intimidacao"</nome>
+			<valor>9</valor>
+		</pericia>
+		<pericia>
+			<nome>"Persuasao"</nome>
+			<valor>14</valor>
+		</pericia>
+		<notas>"Tanga e Nunchakus."</notas>
+		<codJogador>2</codJogador>
+	</Personagem>
+	<Personagem>
+		<nome>"Yonani"</nome>
+		<raca>"Humano"</raca>
+		<classe>"Guerreiro"</classe>
+		<nivel>6</nivel>
+		<habilidade>
+			<nome>"Forca"</nome>
+			<valor>9</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Destreza"</nome>
+			<valor>18</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Constituicao"</nome>
+			<valor>14</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Inteligencia"</nome>
+			<valor>14</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Sabedoria"</nome>
+			<valor>14</valor>
+		</habilidade>
+		<habilidade>
+			<nome>"Carisma"</nome>
+			<valor>15</valor>
+		</habilidade>
+		<pericia>
+			<nome>"Atletismo"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Acrobacia"</nome>
 			<valor>7</valor>
 		</pericia>
-		<notas>"Refrigerante Sproc-Maca"</notas>
-		<codJogador>2</codJogador>
+		<pericia>
+			<nome>"Furtividade"</nome>
+			<valor>4</valor>
+		</pericia>
+		<pericia>
+			<nome>"Prestidigitacao"</nome>
+			<valor>4</valor>
+		</pericia>
+		<pericia>
+			<nome>"Arcanismo"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Historia"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Investigacao"</nome>
+			<valor>5</valor>
+		</pericia>
+		<pericia>
+			<nome>"Natureza"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Religiao"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Adestrar Animais"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Intuicao"</nome>
+			<valor>5</valor>
+		</pericia>
+		<pericia>
+			<nome>"Medicina"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Percepcao"</nome>
+			<valor>5</valor>
+		</pericia>
+		<pericia>
+			<nome>"Sobrevivencia"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Atuacao"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Enganacao"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Intimidacao"</nome>
+			<valor>2</valor>
+		</pericia>
+		<pericia>
+			<nome>"Persuasao"</nome>
+			<valor>2</valor>
+		</pericia>
+		<notas>"Asas, cimitarra, mangual, machadinha e 296po"</notas>
+		<codJogador>7</codJogador>
 	</Personagem>
 </Personagens>

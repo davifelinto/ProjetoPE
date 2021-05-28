@@ -8,4 +8,8 @@
 		<nome>"Shostner"</nome>
 		<codigo>2</codigo>
 	</Jogador>
+	<Jogador>
+		<nome>"Sarah"</nome>
+		<codigo>7</codigo>
+	</Jogador>
 </Jogadores>
