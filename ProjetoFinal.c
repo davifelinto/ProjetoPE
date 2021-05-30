@@ -197,7 +197,7 @@ void valorDePericia (skill pericia[], skill habilidade[], int lvl){
 const char * escolheClasse(){
 	char setas;
 	int tam = 12, opcao = 0, i;
-	//Se for char, a variavel é deletada antes de retornar para main
+	//Se for char, a variavel Ã© deletada antes de retornar para main
 	static char classe[12][20] = {"Barbaro", "Bardo", "Bruxo", "Clerigo", "Druida",
 	 "Feiticeiro", 	"Guardiao", "Guerreiro", "Ladino",	"Mago", "Monge", "Paladino"};
 	printf("Classe do personagem: \n");
@@ -220,11 +220,11 @@ const char * escolheClasse(){
 	
 	return (classe[opcao]);
 }
-//---------------------ESCOLHE A RAÇA ---------------------------------------------------------------------------------------
+//---------------------ESCOLHE A RAÃ‡A ---------------------------------------------------------------------------------------
 
 const char * escolheRaca(){
 	char setas;
-	//Se for char, a variavel é deletada antes de retornar para main
+	//Se for char, a variavel Ã© deletada antes de retornar para main
 	static char raca[14][20] = {"Anao da Colina", "Anao da Montanha", "Draconato", "Elfo (Alto)",  "Elfo (Drow)", "Elfo da Floresta",
 	"Gnomo da Floresta", "Gnomo das Rochas", "Halfling Pes Leves", "Halfling Robusto", "Humano", "Meio-Elfo",	"Meio-Orc", "Tiefling"};
 	int tam = 14, opcao = 0, i;	
@@ -319,76 +319,55 @@ int insertInStr(char **s, int position, char c){
 	}
     return 1;
 }
-void printText(char *s, int *linha){
+void printTextWithCursor(char *s, char c, int position, int posY){
     int currPos, length = strlen(s);
-    char q[200];
-    strcpy(q, s);
-    
-	if(length == 72 && *linha == 1){
-		gotoxy(GetconsoleCursorX(), GetconsoleCursorY()+1);
-		*linha = 2;
-	}else if(length == 143 && *linha == 2){
-		gotoxy(GetconsoleCursorX(), GetconsoleCursorY()+1);
-		*linha = 3;
-	}else if(length < 72 && *linha == 2){
-		putchar(' ');
-		gotoxy(GetconsoleCursorX()-1, GetconsoleCursorY()-1);
-		*linha = 1;
-	}else if(length < 143 && *linha == 3){
-		putchar(' ');
-		gotoxy(GetconsoleCursorX()-1, GetconsoleCursorY()-1);
-		*linha = 2;
-	}
-	if(strlen(s) > 142){
-		strcpy(q, s + 142);
-		length = strlen(q);
-	}else
-	if(strlen(s) > 71){
-		strcpy(q, s + 71);
-		length = strlen(q);
-	}
-    for(currPos = 0; currPos <= length; currPos++){
-        putchar(q[currPos]);
+
+	for(currPos = 0; currPos <= length; currPos++){
+        putchar(s[currPos]);
+        if(currPos == position-1)
+        	putchar('_');
     }
 }
 void alteraString(char *TEXT){
     unsigned char c;
     char *s = malloc(strlen(TEXT)+1);
-    __int64 pos;
-	int linha;
+    int pos, Y;
 	
     strcpy(s, TEXT);
     pos = strlen(s);
-	linha = (pos/71) + 1;
-	
-	printf("\n-----------------------------------------------------------------------\n");
-	printf("\n\n\n-----------------------------------------------------------------------\n");
-	gotoxy(GetconsoleCursorX(), GetconsoleCursorY()-4);
-	printf("%.71s", s);
-	if(pos > 71)
-		printf("\n%.71s", &s[71]);
-	if(pos > 142)
-		printf("\n%.71s", &s[142]);
-	while((c = getch())!= 13){
-        putchar('\r');
+	printf("Equipamento/Pertences: \n");
+	Y = GetconsoleCursorY();
+	printf("%s", s);
+    while((c = getch())!= 13){
+    	gotoxy(1, Y);
         switch(c){
 	        case 224:
 	            c = getch();
+	        	if (c == 75 && pos > 0){
+	        		pos--;
+				}
+	            if (c == 77 && pos < strlen(s)){
+	            	pos++;
+				}
+	            if(c == 83 && pos < strlen(s)){
+	            	deleteSymbol(s, pos);
+				}      
 				break;
 	        case 8:
-	        	if(pos > 0)
+	        	if(pos > 0){
 	                deleteSymbol(s, --pos);
-	            break;
+				}
+				break;
 	        default:
 	            if(pos >= 0 && pos <= strlen(s) && strlen(s) < 200){
 	                insertInStr(&s, pos++, c);
 	            }
 	    }
-	    printText(s, &linha);
+	    printTextWithCursor(s, c,pos, Y);
     }
     strcpy(TEXT, s);
 	free(s);
-	gotoxy(GetconsoleCursorX(), GetconsoleCursorY()+5-linha);
+	printf("\n");
     return;
 }
 //----------------------- MENU -------------------------------------------------------------------------------------------------
@@ -850,9 +829,8 @@ int main(){
     tPersonagem personagem;
 	tJogador jogador;
 	tItem item;
-	/*	HWND consoleWindow = GetConsoleWindow();//PREVINE DE MUDAR O TAMANHO DA TELA
-	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
-	*/	
+	/*HWND consoleWindow = GetConsoleWindow();//PREVINE DE MUDAR O TAMANHO DA TELA
+	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);*/
 	FILE *arqPersonagem, *arqJogador, *arqItem;
 	arqPersonagem = abrirArquivo("personagens.dat");
 	arqJogador = abrirArquivo("jogadores.dat");
@@ -924,7 +902,8 @@ int main(){
 								printf("\nInforme, resumidamente, o equipamento do personagem: ");
 								fflush(stdin);
 								textcolor(CORESCRITA);
-								fgets(personagem.notas, 200, stdin);
+								strcpy(personagem.notas, "");
+								alteraString(personagem.notas);
 								if (personagem.notas[(strlen(personagem.notas) - 1)] == '\n') 
    									personagem.notas[(strlen(personagem.notas) - 1)] = '\0';
 								textcolor(LIGHTGRAY);
@@ -1144,7 +1123,8 @@ int main(){
 							} while(item.tier < 65 || item.tier > 70);
 							printf("\nInforme, resumidamente, a descricao do item: ");
 							fflush(stdin);
-							fgets(item.descr, 200, stdin);
+							strcpy(item.descr, "");
+							alteraString(item.descr);
 							if (item.descr[(strlen(item.descr) - 1)] == '\n') 
    								item.descr[(strlen(item.descr) - 1)] = '\0';							
 							gravarItem(item, -1, arqItem);
