@@ -547,7 +547,7 @@ int mostrarPersonagem(tPersonagem persona, tJogador player, int cor) {
 				}
 			}
 		}
-		printf("\nPercepcao passiva: %d\n", (persona.habil[12].valor+10));
+		printf("\nPercepcao passiva: %d\n", (persona.pericias[12].valor+10));
 		printf("-----------------------------------------------------------------------\n");
 		printf("Equipamento/Pertences:%.49s\n", persona.notas);
 		if(strlen(persona.notas) > 49)
