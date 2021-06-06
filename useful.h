@@ -53,6 +53,13 @@ int GetconsoleCursorX(){
 	X = ponto.X+1;
 	return X;
 }
+void showcursor(){
+   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+   CONSOLE_CURSOR_INFO info;
+   info.dwSize = 1;
+   info.bVisible = TRUE;
+   SetConsoleCursorInfo(consoleHandle, &info);
+}
 void hidecursor(){
    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
    CONSOLE_CURSOR_INFO info;
