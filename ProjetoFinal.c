@@ -8,7 +8,7 @@
 //-------------------------- ENTIDADES -----------------------------------------------------------------------------------------
 typedef struct {
 	char nome[20];
-    int valor;
+    	int valor;
 	char marcado;
 }skill;
 typedef struct {
@@ -35,6 +35,432 @@ typedef struct {
 	char deletado; // *=deletado ' '=nao deletado
 }tJogador;
 //-----------------------FUNCOES-----------------------------------------------------------------------------------------------
+void iniciaHab(skill []);
+void iniciaPericias(skill []);
+void alteraPericias(skill []);
+void alteraHabilidades(skill []);
+void valorDePericia (skill [], skill [], int );
+const char * escolheClasse();
+const char * escolheRaca();
+int escolheJogador(FILE *);
+void deleteSymbol(char *, int );
+int insertInStr(char **, int , char );
+void printTextWithCursor(char *, int );
+void alteraString(char *);
+int menu(char *[], int , char []);
+FILE *abrirArquivo(char []);
+tJogador lerJogador(int , FILE *);
+int consultarJogador(int , FILE *);
+void listarJogadores(FILE *, FILE *);
+void gravarJogador(tJogador , int , FILE *);
+void excluirJogador(int , FILE *);
+void excluirFisicamenteJogador(FILE **, char []);
+tPersonagem lerPersonagem(int , FILE *);
+void salvarPersonagem(tPersonagem , int , FILE *);
+int mostrarPersonagem(tPersonagem , tJogador , int );
+void listarPersonagems(FILE *, FILE *);
+int consultarPersonagem(char [], FILE *);
+void excluirPersonagem(int , FILE *);
+void excluiPersonagemLigado(int , FILE *);
+void excluirFisicamentePersonagem(FILE **, char []);
+tItem lerItem(int , FILE *);
+int consultarItem(char [], FILE *) ;
+int mostrarItem(tItem , int );
+void listarItens(FILE *);
+void gravarItem(tItem , int , FILE *);
+void excluirItem(int , FILE *);
+void excluirFisicamenteItem(FILE **, char []);
+void criaXML_P(FILE *);
+void criaXML_J(FILE *);
+void criaXML_I(FILE *);
+void lixeira(FILE *, FILE *, FILE *);
+//////////////////////////////////////////////////// MAIN /////////////////////////////////////////////////////////////
+int main(){
+    int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 6, tam2 = 6, tamM = 6, primeiro;
+    char *menu1[]= {"Personagem", "Jogador", "Item", "Lixeira", "Exportar dados para XML", "Sair"};
+	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar", "Excluir", "Voltar"};
+	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
+    tPersonagem personagem;
+	tJogador jogador;
+	tItem item;
+	FILE *arqPersonagem, *arqJogador, *arqItem;
+	arqPersonagem = abrirArquivo("personagens.dat");
+	arqJogador = abrirArquivo("jogadores.dat");
+	arqItem = abrirArquivo("itens.dat");
+	printDnD();
+	printf("Pressione qualquer tecla para entrar no programa");
+	_getch();
+	if ((arqPersonagem == NULL) || (arqJogador == NULL) || (arqItem == NULL)){
+		printf("ERRO! O arquivo nao pode ser aberto!");
+		return 1;
+	}
+	do{
+		clear_screen();
+		escolha1 = menu(menu1, tam1, "MENU"); // escolha de submenu
+		switch (escolha1){
+			case 1:	// ---------------- menu personagens ----------------
+				do {
+					clear_screen();
+					escolha2 = menu(menu2, tam2, "Personagem");
+					switch (escolha2){
+						case 1:
+								clear_screen();
+								iniciaHab(personagem.habil);
+								iniciaPericias(personagem.pericias);
+								printf("\t\t\tAtencao!!! Use %c e %c para alternar e Enter para confirmar\n", 24, 25);
+								printf("---> Inclusao de Personagem <---\n\n");
+								jogador.codigo = escolheJogador(arqJogador);
+								personagem.codJogador = jogador.codigo;
+								printf("\nDigite o nome do personagem: \n");
+								fflush(stdin);
+								do{
+									textcolor(CORESCRITA);
+									gets(personagem.nome);
+									if(strcmp(personagem.nome, "") == 0){
+										textcolor(RED);
+										printf("O nome nao deve ficar vazio!\n");
+									}
+									if(consultarPersonagem(personagem.nome, arqPersonagem) > 0){
+										textcolor(RED);
+										printf("Esse personagem ja existe!\n");
+									}
+								}while(consultarPersonagem(personagem.nome, arqPersonagem) > 0 || strcmp(personagem.nome, "") == 0);
+								textcolor(LIGHTGRAY);
+								strcpy(personagem.raca, escolheRaca());
+								strcpy(personagem.classe, escolheClasse());
+								printf("\nInforme o nivel do personagem: ");
+								do{
+									textcolor(CORESCRITA);
+									scanf("%d", &personagem.nivel);
+									if(personagem.nivel > 20 || personagem.nivel < 1){
+										textcolor(RED);
+										printf("O nivel de um personagem deve ser entre 1 e 20: ");
+									}
+								}while(personagem.nivel > 20 || personagem.nivel < 1);
+								textcolor(LIGHTGRAY);
+								printf("\nInforme a CA do personagem: ");
+								do{
+									textcolor(CORESCRITA);
+									scanf("%d", &personagem.CA);
+									if(personagem.CA < 0){
+										textcolor(RED);
+										printf("A classe de armadura nao pode ser negativa: ");
+									}
+								}while(personagem.CA < 0);
+								textcolor(LIGHTGRAY);
+								alteraHabilidades(personagem.habil);
+								alteraPericias(personagem.pericias);
+								valorDePericia(personagem.pericias, personagem.habil, personagem.nivel);
+								printf("\nInforme, resumidamente, o equipamento do personagem: ");
+								fflush(stdin);
+								textcolor(CORESCRITA);
+								strcpy(personagem.notas, "");
+								alteraString(personagem.notas);
+								if (personagem.notas[(strlen(personagem.notas) - 1)] == '\n') 
+   									personagem.notas[(strlen(personagem.notas) - 1)] = '\0';
+								textcolor(LIGHTGRAY);
+								salvarPersonagem(personagem, -1, arqPersonagem);
+							break;
+						case 2:
+							clear_screen();
+							printf("\n\n---> Listagem de Personagem <---\n\n");
+							listarPersonagems(arqPersonagem, arqJogador);
+							break;
+						case 3:
+							clear_screen(); 
+							printf("\n\n---> Consulta de Personagem <---\n\n");
+							printf("Digite o nome ou a posicao do personagem: ");
+							fflush(stdin);
+							gets(personagem.nome);
+							local = consultarPersonagem(personagem.nome, arqPersonagem);
+							if (local > 0){
+								personagem = lerPersonagem(local, arqPersonagem);
+								local = consultarJogador(personagem.codJogador, arqJogador);
+								jogador = lerJogador(local, arqJogador);
+								mostrarPersonagem(personagem, jogador, BLACK);
+								backgroundcolor(BLACK);
+								textcolor(LIGHTGRAY);
+							}
+							else
+								printf("Personagem nao encontrado!\n");
+							break;
+						case 4:
+							clear_screen();
+							printf("\n\n---> Alteracao de Personagem <---\n\n");
+							printf("Digite o nome ou a posicao do personagem: ");
+							fflush(stdin);
+							gets(personagem.nome);
+							local = consultarPersonagem(personagem.nome, arqPersonagem);
+							if (local > 0){
+								personagem = lerPersonagem(local, arqPersonagem);
+								do{
+									escolhaM = menu(menuMod, tamM, "O que deseja modificar?");
+									switch(escolhaM){
+										case 1:
+											printf("\nModificacao nas habilidades\n");
+											alteraHabilidades(personagem.habil);
+											break;
+										case 2:
+											printf("\nModificacao nas pericias\n");
+											alteraPericias(personagem.pericias);
+											break;
+										case 3:
+											printf("\nNivel: %i\n", personagem.nivel);
+											printf("Digite o novo nivel: ");
+											scanf("%d", &personagem.nivel);
+											valorDePericia(personagem.pericias, personagem.habil, personagem.nivel);
+											break;
+										case 4:
+											printf("\nClasse de armadura: %i\n", personagem.CA);
+											printf("Digite a nova armadura: ");
+											scanf("%d", &personagem.CA);
+											break;
+										case 5:
+											printf("\nEquipamento/Pertences: ");
+											alteraString(personagem.notas);
+											
+									}
+								}while(escolhaM != 0);
+								salvarPersonagem(personagem, local, arqPersonagem);
+							}else
+								printf("Personagem nao encontrado!\n");
+							break;
+				        case 5:
+				        	clear_screen();
+							printf("\n\n---> Exclusao de Personagem <---\n\n");
+							printf("Digite o nome ou a posicao do personagem: ");
+							fflush(stdin);
+							gets(personagem.nome);
+							local = consultarPersonagem(personagem.nome, arqPersonagem);
+							if (local > 0){
+								excluirPersonagem(local, arqPersonagem);
+								printf("Exclusao concluida\n");
+							}else
+								printf("Personagem nao encontrado!\n");
+							break;
+					}
+					if(escolha2 != 0){
+						printf("\npressione qualquer tecla para continuar");
+						_getch();	
+					}
+				}while (escolha2 != 0);
+				break;
+			case 2: // ---------------- menu jogador ----------------
+				do {
+					clear_screen();
+					escolha2 = menu(menu2, tam2, "Jogador");
+					switch (escolha2) {
+						case 1: 
+							clear_screen();
+							printf("\n\n---> Registro de Jogador <---\n\n");	
+							fseek(arqJogador, -(int)sizeof(jogador), SEEK_END);
+							printf("Digite o codigo do jogador: ");
+							do{
+								scanf("%d", &jogador.codigo);
+								if(consultarJogador(jogador.codigo, arqJogador) > 0){
+									printf("Esse codigo ja existe, tente novamente: \n");
+								}
+								if(jogador.codigo < 1){
+									printf("O codigo nao pode ser menor que 1, tente novamente: \n");
+								}
+							}while(consultarJogador(jogador.codigo, arqJogador) > 0 || (jogador.codigo < 1));
+							printf("Jogador %i", jogador.codigo);
+							printf("\nDigite o nome do jogador: ");
+							fflush(stdin);
+							do{
+								gets(jogador.nome);
+								if(strcmp(jogador.nome, "") == 0){
+									printf("O nome nao deve ficar vazio!\n");
+								}
+							}while(strcmp(jogador.nome, "") == 0);
+							gravarJogador(jogador, -1, arqJogador);
+							break;
+						case 2: 
+							clear_screen();
+							printf("\n\n---> Listagem de Jogador <---\n\n");
+							listarJogadores(arqJogador, arqPersonagem);
+							break;
+						case 3: 
+							clear_screen();
+							printf("\n\n---> Consulta de Jogador <---\n\n");
+							printf("Digite o codigo: ");
+							fflush(stdin);
+							scanf("%d", &codigo);
+							local = consultarJogador(codigo, arqJogador);
+							if (local > 0){
+								jogador = lerJogador(local, arqJogador);
+								printf("Nome...........: %s\n",  jogador.nome);
+								printf("Personagens....: ");
+								fseek(arqPersonagem, 0, SEEK_SET);
+								primeiro = 0;
+					    		while (fread(&personagem, sizeof(personagem), 1, arqPersonagem)){
+						    		if(personagem.codJogador == jogador.codigo){
+						    			if(primeiro == 0)
+											printf("%s", personagem.nome);
+										else
+											printf(", %s", personagem.nome);
+										primeiro++;
+									}
+								}
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+							break;
+						case 4: 
+							clear_screen();
+							printf("\n\n---> Alteracao de Jogador <---\n\n");
+							printf("Digite o codigo: ");
+							fflush(stdin);
+							scanf("%d", &codigo);
+							local = consultarJogador(codigo, arqJogador);
+							if (local > 0) {
+								jogador = lerJogador(local, arqJogador);
+								printf("Nome..............: %s\n", jogador.nome);
+								printf("Digite o nome.....: ");
+								fflush(stdin);
+								gets(jogador.nome);
+								gravarJogador(jogador, local, arqJogador);
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+							break;
+						case 5: 
+							clear_screen();
+							printf("\n\n---> Exclusao de Jogador <---\n\n");
+							printf("Digite o codigo: ");
+							fflush(stdin);
+							scanf("%d", &codigo);
+							local = consultarJogador(codigo, arqJogador);
+							if (local > 0){
+								jogador = lerJogador(local, arqJogador);
+								printf("Nome..............: %s\n", jogador.nome);
+								printf("Deseja continuar? Personagens ligados a esse jogador serao excluidos\n");
+								printf("\t\t(Pressione enter para confirmar)\n");
+								if(_getch() == 13){
+									excluiPersonagemLigado(codigo, arqPersonagem);
+									excluirJogador(local, arqJogador);
+									printf("Exclusao concluida");
+								}else{
+									printf("\nVoltando...");
+								}
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+				        }
+						if(escolha2 != 0){
+							printf("\npressione qualquer tecla para continuar");
+							_getch();	
+						}
+				    }while (escolha2 != 0);
+				break;
+			case 3: // ---------------- menu item ----------------
+				do {
+					clear_screen();
+					escolha2 = menu(menu2, tam2, "Item");
+					switch (escolha2) {
+						case 1:
+							clear_screen();
+							printf("\n\n---> Registro de Item <---\n\n");	
+							printf("\nDigite o nome do item: ");
+							fflush(stdin);
+							do{
+								gets(item.nome);
+								if(strcmp(item.nome, "") == 0)
+									printf("O nome nao deve ficar vazio!\n");
+								if(consultarItem(item.nome, arqItem) > 0)
+									printf("Item ja existe, tente novamente: \n");
+							}while(strcmp(item.nome, "") == 0 || (consultarItem(item.nome, arqItem) > 0));
+							printf("\nDigite o tier do item (F=Comum; E=Incomum; D=Raro; C=Muito Raro; B= Lendario; A=Artefato): ");
+							do{
+								item.tier = _getche();
+								item.tier = toupper(item.tier);
+								if(item.tier < 65 || item.tier > 70)
+									printf("\nErro! Digite uma letra valida:");
+							} while(item.tier < 65 || item.tier > 70);
+							printf("\nInforme, resumidamente, a descricao do item: ");
+							fflush(stdin);
+							strcpy(item.descr, "");
+							alteraString(item.descr);
+							if (item.descr[(strlen(item.descr) - 1)] == '\n') 
+   								item.descr[(strlen(item.descr) - 1)] = '\0';							
+							gravarItem(item, -1, arqItem);
+							break;
+						case 2: 
+							clear_screen();
+							printf("\n\n---> Listagem de Item <---\n\n");
+							listarItens(arqItem);
+							break;
+						case 3: 
+							clear_screen();
+							printf("\n\n---> Consulta de Item <---\n\n");
+							printf("Digite o nome ou a posicao do item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								item = lerItem(local, arqItem);
+								mostrarItem(item, BLACK);
+								backgroundcolor(BLACK);
+								textcolor(LIGHTGRAY);
+							}
+							else
+								printf("Item nao encontrado!\n");
+							break;
+						case 4: 
+							clear_screen();
+							printf("\n\n---> Alteracao de Item <---\n\n");
+							printf("Digite o nome ou a posicao do item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0) {
+								item = lerItem(local, arqItem);
+								printf("Nome..............: %s\n", item.nome);
+								printf("Digite o nome.....: ");
+								fflush(stdin);
+								gets(item.nome);
+								printf("\nDescricao: ");
+								alteraString(item.descr);
+								gravarItem(item, local, arqItem);
+							}
+							else
+								printf("Codigo nao encontrado!\n");
+							break;
+						case 5: 
+							clear_screen();
+							printf("\n\n---> Exclusao de Item <---\n\n");
+							printf("Digite o nome ou a posicao do item: ");
+							fflush(stdin);
+							gets(item.nome);
+							local = consultarItem(item.nome, arqItem);
+							if (local > 0){
+								excluirItem(local, arqItem);
+								printf("Exclusao concluida\n");
+							}else
+								printf("Item nao encontrado!\n");
+							break;
+				        }
+						if(escolha2 != 0){
+							printf("\npressione qualquer tecla para continuar");
+							_getch();	
+						}
+				    }while (escolha2 != 0);
+				break;
+			case 4:
+				clear_screen();
+				lixeira(arqPersonagem, arqJogador, arqItem);
+				break;
+			case 5:
+				criaXML_P(arqPersonagem);
+				criaXML_J(arqJogador);
+				criaXML_I(arqItem);				
+		}
+	}while(escolha1 != 0);
+	fclose(arqPersonagem);
+	fclose(arqJogador);
+	fclose(arqItem);
+    return 0;
+}
 //-----------------------INICIA O NOME, VALOR E OS MARCADORES DAS HABILIDADES -------------------------------------------------
 void iniciaHab(skill habilidades[]){
     int i;
@@ -48,6 +474,200 @@ void iniciaHab(skill habilidades[]){
         habilidades[i].valor = 8;
         habilidades[i].marcado = ' ';
     }
+}
+//--------------------------   LIXEIRA   ---------------------------------------------------------------------------------------
+void lixeira(FILE *arqPersonagem, FILE *arqJogador, FILE *arqItem){
+	int opcao = 0, i, local, posicao, escolha;
+	char setas, *menuL[]= {"Lixeira de Personagem", "Lixeira de Jogador", "Lixeira de Item", "Esvaziar Lixeira", "voltar"};
+	tPersonagem personagem;
+	tJogador jogador;
+	tItem item;
+	do{
+		clear_screen();
+		escolha = menu(menuL, 5, "Escolha o que deseja fazer:");
+		clear_screen();
+		switch(escolha){
+			case 1://PERSONAGENS
+				do{
+					gotoxy(1, 1);
+					printf("Pressione enter para restaurar e esc para voltar.\n");
+					fseek(arqPersonagem, 0, SEEK_SET);
+					i = 0;
+					local = 0;
+					while (fread(&personagem, sizeof(personagem), 1, arqPersonagem)){
+						if(personagem.deletado == '*'){
+							if(i == opcao){
+								textcolor(RED);
+								posicao = local+1;
+							}
+							printf("%s\n", personagem.nome);
+							textcolor(LIGHTGRAY);
+							i++;
+						}
+						local++;
+					}
+					if(i == 0){
+						printf("\nNao existem personagens na lixeira\n retornando ao menu... pressione qualquer tecla para continuar");
+						_getch();
+						break;
+					}
+					do{
+						setas = _getch();
+						if(setas == 27){//ESC
+							i = 0;
+							break;
+						}
+					}while(setas != 72 && setas != 80 && setas != 13);
+					if(i == 0){
+						break;
+					}		
+					if(setas == 80)//seta para baixo
+						opcao = (opcao + 1) % i;
+					else if(setas == 72){//seta para cima
+						opcao = opcao - 1;
+						if(opcao == -1) opcao = i-1;
+					}
+				}while(setas != 13);
+				if(i == 0){
+					break;
+				}
+				personagem = lerPersonagem(posicao, arqPersonagem);
+				if((consultarJogador((personagem.codJogador), arqJogador) > 0) && (consultarPersonagem(personagem.nome, arqPersonagem) < 0)){
+					personagem.deletado = ' ';
+					salvarPersonagem(personagem, posicao, arqPersonagem);
+					printf("O personagem foi restaurado com sucesso");
+				}else{
+					printf("Nao foi possivel restaurar o personagem. \n");
+					if(consultarJogador((personagem.codJogador), arqJogador) < 0){
+						printf("Nao existe um jogador %i para este personagem retornar", personagem.codJogador);
+					}else
+						printf("Ja existe um personagem com o mesmo nome");
+				}
+				getch();
+				break;
+			case 2://JOGADORES
+				do{
+					gotoxy(1, 1);
+					printf("Pressione enter para restaurar e esc para voltar.\n");
+					fseek(arqJogador, 0, SEEK_SET);
+					i = 0;
+					local = 0;
+					while (fread(&jogador, sizeof(jogador), 1, arqJogador)){
+						if(jogador.deletado == '*'){
+							if(i == opcao){
+								textcolor(RED);
+								posicao = local+1;
+							}
+							printf("%s Jogador:%i\n", jogador.nome, jogador.codigo);
+							textcolor(LIGHTGRAY);
+							i++;
+						}
+						local++;
+					}
+					if(i == 0){
+						printf("\nNao existem jogadores na lixeira\n retornando ao menu... pressione qualquer tecla para continuar");
+						_getch();
+						break;
+					}
+					do{
+						setas = _getch();
+						if(setas == 27){//ESC
+							i = 0;
+							break;
+						}
+					}while(setas != 72 && setas != 80 && setas != 13);
+					if(i == 0){
+						break;
+					}	
+					if(setas == 80)//seta para baixo
+						opcao = (opcao + 1) % i;
+					else if(setas == 72){//seta para cima
+						opcao = opcao - 1;
+						if(opcao == -1) opcao = i-1;
+					}
+				}while(setas != 13);
+				if(i == 0){
+					break;
+				}
+				jogador = lerJogador(posicao, arqJogador);
+				printf("%s\n", jogador.nome);
+				if(consultarJogador(jogador.codigo, arqJogador) < 0){
+					jogador.deletado = ' ';
+					gravarJogador(jogador, posicao, arqJogador);
+					printf("O jogador %i foi restaurado com sucesso", jogador.codigo);
+				}else{
+					printf("Nao foi possivel restaurar o jogador. \n"
+					"Ja existe um jogador salvo com o mesmo codigo");
+				}
+				getch();
+				break;
+			case 3://ITENS
+				do{
+					gotoxy(1, 1);
+					printf("Pressione enter para restaurar e esc para voltar.\n");
+					fseek(arqItem, 0, SEEK_SET);
+					i = 0;
+					local = 0;
+					while (fread(&item, sizeof(item), 1, arqItem)){
+						if(item.deletado == '*'){
+							if(i == opcao){
+								textcolor(RED);
+								posicao = local+1;
+							}
+							printf("%s\n", item.nome);
+							textcolor(LIGHTGRAY);
+							i++;
+						}
+						local++;
+					}
+					if(i == 0){
+						printf("\nNao existem itens na lixeira\n retornando ao menu... pressione qualquer tecla para continuar");
+						_getch();
+						break;
+					}
+					do{
+						setas = _getch();
+						if(setas == 27){//ESC
+							i = 0;
+							break;
+						}
+					}while(setas != 72 && setas != 80 && setas != 13);
+					if(i == 0){
+						break;
+					}
+					if(setas == 80)//seta para baixo
+						opcao = (opcao + 1) % i;
+					else if(setas == 72){//seta para cima
+						opcao = opcao - 1;
+						if(opcao == -1) opcao = i-1;
+					}
+				}while(setas != 13);
+				if(i == 0){
+					break;
+				}
+				item = lerItem(posicao, arqItem);
+				if((consultarItem(item.nome, arqItem) < 0)){
+					item.deletado = ' ';
+					gravarItem(item, posicao, arqItem);
+					printf("o item foi restaurado com sucesso");
+				}else{
+					printf("Nao foi possivel restaurar o item. \n"
+					"Ja existe um item com o mesmo nome");
+				}
+				getch();
+				break;
+			case 4://ESVAZIAR A LIXEIRA
+				printf("Tem certeza de que quer esvaziar a lixeira?\nesc para voltar\n");
+				if(_getch() == 27)
+					break;
+				excluirFisicamenteJogador(&arqJogador, "jogadores.dat");
+				excluirFisicamentePersonagem(&arqPersonagem, "personagens.dat");
+				excluirFisicamenteItem(&arqItem, "itens.dat");
+				printf("Lixeira esvaziada com sucesso!\n");
+				printf("\npressione qualquer tecla para continuar");
+				_getch();
+		}
+	}while(escolha != 0);
 }
 //-----------------------INICIA O NOME E OS MARCADORES DAS PERICIAS -----------------------------------------------------------
 void iniciaPericias(skill pericias[]){
@@ -220,7 +840,7 @@ const char * escolheClasse(){
 	
 	return (classe[opcao]);
 }
-//---------------------ESCOLHE A RAÃ‡A ---------------------------------------------------------------------------------------
+//---------------------ESCOLHE A RACA ---------------------------------------------------------------------------------------
 
 const char * escolheRaca(){
 	char setas;
@@ -319,7 +939,7 @@ int insertInStr(char **s, int position, char c){
 	}
     return 1;
 }
-void printTextWithCursor(char *s, char c, int position, int posY){
+void printTextWithCursor(char *s, int position){
     int currPos, length = strlen(s);
 
 	for(currPos = 0; currPos <= length; currPos++){
@@ -333,6 +953,7 @@ void alteraString(char *TEXT){
     char *s = malloc(strlen(TEXT)+1);
     int pos, Y;
 	
+	hidecursor();
     strcpy(s, TEXT);
     pos = strlen(s);
 	printf("Equipamento/Pertences: \n");
@@ -363,11 +984,12 @@ void alteraString(char *TEXT){
 	                insertInStr(&s, pos++, c);
 	            }
 	    }
-	    printTextWithCursor(s, c,pos, Y);
+	    printTextWithCursor(s, pos);
     }
     strcpy(TEXT, s);
 	free(s);
 	printf("\n");
+	showcursor();
     return;
 }
 //----------------------- MENU -------------------------------------------------------------------------------------------------
@@ -386,7 +1008,9 @@ int menu(char *texto[], int tam, char string[]){
 		getT = (i+1) - (((i+1) / tam)*(i+1));
 		printf("%i. %s\n", getT,texto[i]);
 	}
-	esc = _getch();	
+	do{
+		esc = _getch();
+	}while((esc < 48) || (esc > 57));
 	return esc - 48;
 }
 //-----------------------MANIPULACOES DE ARQUIVO (CRUDS)-----------------------------------------------------------------------
@@ -397,7 +1021,6 @@ FILE *abrirArquivo(char arquivo[]){
 	return arq;
 }
 // - - - - - Jogadores - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Aparentemente funcionando todos
 //-------------- LER O ARQUIVO DE JOGADORES ------------------------------------------------------------------------------------
 tJogador lerJogador(int local, FILE *arq) {
 	tJogador player;
@@ -819,391 +1442,4 @@ void criaXML_I(FILE *arqItem) {
 	fclose(arqXML);
 	printf("\nExportando \"itens.xml\"... Pressione qualquer tecla para continuar.");
 	_getch();
-}
-//////////////////////////////////////////////////// MAIN /////////////////////////////////////////////////////////////
-int main(){
-    int escolha1, escolha2, escolhaM, codigo, local, CORESCRITA = WHITE, tam1 = 6, tam2 = 6, tamM = 6, primeiro;
-    char *menu1[]= {"Personagem", "Jogador", "Item", "Esvaziar lixeira", "Exportar dados para XML", "Sair"};
-	char *menu2[]= {"Incluir", "Listar", "Consultar", "Alterar", "Excluir", "Voltar"};
-	char *menuMod[]= {"Habilidades", "Pericias", "Nivel", "Classe de Armadura", "Equipamento/Pertences", "Voltar"};
-    tPersonagem personagem;
-	tJogador jogador;
-	tItem item;
-	/*HWND consoleWindow = GetConsoleWindow();//PREVINE DE MUDAR O TAMANHO DA TELA
-	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);*/
-	FILE *arqPersonagem, *arqJogador, *arqItem;
-	arqPersonagem = abrirArquivo("personagens.dat");
-	arqJogador = abrirArquivo("jogadores.dat");
-	arqItem = abrirArquivo("itens.dat");
-	printDnD();
-	printf("Pressione qualquer tecla para entrar no programa");
-	_getch();
-	if ((arqPersonagem == NULL) || (arqJogador == NULL) || (arqItem == NULL)){
-		printf("ERRO! O arquivo nao pode ser aberto!");
-		return 1;
-	}
-	do{
-		clear_screen();
-		escolha1 = menu(menu1, tam1, "MENU"); // escolha de submenu
-		switch (escolha1){
-			case 1:	// ---------------- menu personagens ----------------
-				do {
-					clear_screen();
-					escolha2 = menu(menu2, tam2, "Personagem");
-					switch (escolha2){
-						case 1:
-								clear_screen();
-								iniciaHab(personagem.habil);
-								iniciaPericias(personagem.pericias);
-								printf("\t\t\tAtencao!!! Use %c e %c para alternar e Enter para confirmar\n", 24, 25);
-								printf("---> Inclusao de Personagem <---\n\n");
-								jogador.codigo = escolheJogador(arqJogador);
-								personagem.codJogador = jogador.codigo;
-								printf("\nDigite o nome do personagem: \n");
-								fflush(stdin);
-								do{
-									textcolor(CORESCRITA);
-									gets(personagem.nome);
-									if(strcmp(personagem.nome, "") == 0){
-										textcolor(RED);
-										printf("O nome nao deve ficar vazio!\n");
-									}
-									if(consultarPersonagem(personagem.nome, arqPersonagem) > 0){
-										textcolor(RED);
-										printf("Esse personagem ja existe!\n");
-									}
-								}while(consultarPersonagem(personagem.nome, arqPersonagem) > 0 || strcmp(personagem.nome, "") == 0);
-								textcolor(LIGHTGRAY);
-								strcpy(personagem.raca, escolheRaca());
-								strcpy(personagem.classe, escolheClasse());
-								printf("\nInforme o nivel do personagem: ");
-								do{
-									textcolor(CORESCRITA);
-									scanf("%d", &personagem.nivel);
-									if(personagem.nivel > 20 || personagem.nivel < 1){
-										textcolor(RED);
-										printf("O nivel de um personagem deve ser entre 1 e 20: ");
-									}
-								}while(personagem.nivel > 20 || personagem.nivel < 1);
-								textcolor(LIGHTGRAY);
-								printf("\nInforme a CA do personagem: ");
-								do{
-									textcolor(CORESCRITA);
-									scanf("%d", &personagem.CA);
-									if(personagem.CA < 0){
-										textcolor(RED);
-										printf("A classe de armadura nao pode ser negativa: ");
-									}
-								}while(personagem.CA < 0);
-								textcolor(LIGHTGRAY);
-								alteraHabilidades(personagem.habil);
-								alteraPericias(personagem.pericias);
-								valorDePericia(personagem.pericias, personagem.habil, personagem.nivel);
-								printf("\nInforme, resumidamente, o equipamento do personagem: ");
-								fflush(stdin);
-								textcolor(CORESCRITA);
-								strcpy(personagem.notas, "");
-								alteraString(personagem.notas);
-								if (personagem.notas[(strlen(personagem.notas) - 1)] == '\n') 
-   									personagem.notas[(strlen(personagem.notas) - 1)] = '\0';
-								textcolor(LIGHTGRAY);
-								salvarPersonagem(personagem, -1, arqPersonagem);
-							break;
-						case 2:
-							clear_screen();
-							printf("\n\n---> Listagem de Personagem <---\n\n");
-							listarPersonagems(arqPersonagem, arqJogador);
-							break;
-						case 3:
-							clear_screen(); 
-							printf("\n\n---> Consulta de Personagem <---\n\n");
-							printf("Digite o nome ou a posicao do personagem: ");
-							fflush(stdin);
-							gets(personagem.nome);
-							local = consultarPersonagem(personagem.nome, arqPersonagem);
-							if (local > 0){
-								personagem = lerPersonagem(local, arqPersonagem);
-								local = consultarJogador(personagem.codJogador, arqJogador);
-								jogador = lerJogador(local, arqJogador);
-								mostrarPersonagem(personagem, jogador, BLACK);
-								backgroundcolor(BLACK);
-								textcolor(LIGHTGRAY);
-							}
-							else
-								printf("Personagem nao encontrado!\n");
-							break;
-						case 4:
-							clear_screen();
-							printf("\n\n---> Alteracao de Personagem <---\n\n");
-							printf("Digite o nome ou a posicao do personagem: ");
-							fflush(stdin);
-							gets(personagem.nome);
-							local = consultarPersonagem(personagem.nome, arqPersonagem);
-							if (local > 0){
-								personagem = lerPersonagem(local, arqPersonagem);
-								do{
-									escolhaM = menu(menuMod, tamM, "O que deseja modificar?");
-									switch(escolhaM){
-										case 1:
-											printf("\nModificacao nas habilidades\n");
-											alteraHabilidades(personagem.habil);
-											break;
-										case 2:
-											printf("\nModificacao nas pericias\n");
-											alteraPericias(personagem.pericias);
-											break;
-										case 3:
-											printf("\nNivel: %i\n", personagem.nivel);
-											printf("Digite o novo nivel: ");
-											scanf("%d", &personagem.nivel);
-											valorDePericia(personagem.pericias, personagem.habil, personagem.nivel);
-											break;
-										case 4:
-											printf("\nClasse de armadura: %i\n", personagem.CA);
-											printf("Digite a nova armadura: ");
-											scanf("%d", &personagem.CA);
-											break;
-										case 5:
-											printf("\nEquipamento/Pertences: ");
-											alteraString(personagem.notas);
-											
-									}
-								}while(escolhaM != 0);
-								salvarPersonagem(personagem, local, arqPersonagem);
-							}else
-								printf("Personagem nao encontrado!\n");
-							break;
-				        case 5:
-				        	clear_screen();
-							printf("\n\n---> Exclusao de Personagem <---\n\n");
-							printf("Digite o nome ou a posicao do personagem: ");
-							fflush(stdin);
-							gets(personagem.nome);
-							local = consultarPersonagem(personagem.nome, arqPersonagem);
-							if (local > 0){
-								excluirPersonagem(local, arqPersonagem);
-								printf("Exclusao concluida\n");
-							}else
-								printf("Personagem nao encontrado!\n");
-							break;
-					}
-					printf("\npressione qualquer tecla para continuar");
-					_getch();
-				}while (escolha2 != 0);
-				break;
-			case 2: // ---------------- menu jogador ----------------
-				do {
-					clear_screen();
-					escolha2 = menu(menu2, tam2, "Jogador");
-					switch (escolha2) {
-						case 1: 
-							clear_screen();
-							printf("\n\n---> Registro de Jogador <---\n\n");	
-							fseek(arqJogador, -(int)sizeof(jogador), SEEK_END);
-							printf("Digite o codigo do jogador: ");
-							do{
-								scanf("%d", &jogador.codigo);
-								if(consultarJogador(jogador.codigo, arqJogador) > 0){
-									printf("Esse codigo ja existe, tente novamente: \n");
-								}
-								if(jogador.codigo < 1){
-									printf("O codigo nao pode ser menor que 1, tente novamente: \n");
-								}
-							}while(consultarJogador(jogador.codigo, arqJogador) > 0 || (jogador.codigo < 1));
-							printf("Jogador %i", jogador.codigo);
-							printf("\nDigite o nome do jogador: ");
-							fflush(stdin);
-							do{
-								gets(jogador.nome);
-								if(strcmp(jogador.nome, "") == 0){
-									printf("O nome nao deve ficar vazio!\n");
-								}
-							}while(strcmp(jogador.nome, "") == 0);
-							gravarJogador(jogador, -1, arqJogador);
-							break;
-						case 2: 
-							clear_screen();
-							printf("\n\n---> Listagem de Jogador <---\n\n");
-							listarJogadores(arqJogador, arqPersonagem);
-							break;
-						case 3: 
-							clear_screen();
-							printf("\n\n---> Consulta de Jogador <---\n\n");
-							printf("Digite o codigo: ");
-							fflush(stdin);
-							scanf("%d", &codigo);
-							local = consultarJogador(codigo, arqJogador);
-							if (local > 0){
-								jogador = lerJogador(local, arqJogador);
-								printf("Nome...........: %s\n",  jogador.nome);
-								printf("Personagens....: ");
-								fseek(arqPersonagem, 0, SEEK_SET);
-								primeiro = 0;
-					    		while (fread(&personagem, sizeof(personagem), 1, arqPersonagem)){
-						    		if(personagem.codJogador == jogador.codigo){
-						    			if(primeiro == 0)
-											printf("%s", personagem.nome);
-										else
-											printf(", %s", personagem.nome);
-										primeiro++;
-									}
-								}
-							}
-							else
-								printf("Codigo nao encontrado!\n");
-							break;
-						case 4: 
-							clear_screen();
-							printf("\n\n---> Alteracao de Jogador <---\n\n");
-							printf("Digite o codigo: ");
-							fflush(stdin);
-							scanf("%d", &codigo);
-							local = consultarJogador(codigo, arqJogador);
-							if (local > 0) {
-								jogador = lerJogador(local, arqJogador);
-								printf("Nome..............: %s\n", jogador.nome);
-								printf("Digite o nome.....: ");
-								fflush(stdin);
-								gets(jogador.nome);
-								gravarJogador(jogador, local, arqJogador);
-							}
-							else
-								printf("Codigo nao encontrado!\n");
-							break;
-						case 5: 
-							clear_screen();
-							printf("\n\n---> Exclusao de Jogador <---\n\n");
-							printf("Digite o codigo: ");
-							fflush(stdin);
-							scanf("%d", &codigo);
-							local = consultarJogador(codigo, arqJogador);
-							if (local > 0){
-								jogador = lerJogador(local, arqJogador);
-								printf("Nome..............: %s\n", jogador.nome);
-								printf("Deseja continuar? Personagens ligados a esse jogador serao excluidos\n");
-								printf("\t\t(Pressione enter para confirmar)\n");
-								if(_getch() == 13){
-									excluiPersonagemLigado(codigo, arqPersonagem);
-									excluirJogador(local, arqJogador);
-									printf("Exclusao concluida");
-								}else{
-									printf("\nVoltando...");
-								}
-							}
-							else
-								printf("Codigo nao encontrado!\n");
-				        }
-				        printf("\npressione qualquer tecla para continuar");
-				        _getch();
-				    }while (escolha2 != 0);
-				break;
-			case 3: // ---------------- menu item ----------------
-				do {
-					clear_screen();
-					escolha2 = menu(menu2, tam2, "Item");
-					switch (escolha2) {
-						case 1:
-							clear_screen();
-							printf("\n\n---> Registro de Item <---\n\n");	
-							printf("\nDigite o nome do item: ");
-							fflush(stdin);
-							do{
-								gets(item.nome);
-								if(strcmp(item.nome, "") == 0)
-									printf("O nome nao deve ficar vazio!\n");
-								if(consultarItem(item.nome, arqItem) > 0)
-									printf("Item ja existe, tente novamente: \n");
-							}while(strcmp(item.nome, "") == 0 || (consultarItem(item.nome, arqItem) > 0));
-							printf("\nDigite o tier do item (F=Comum; E=Incomum; D=Raro; C=Muito Raro; B= Lendario; A=Artefato): ");
-							do{
-								item.tier = _getche();
-								item.tier = toupper(item.tier);
-								if(item.tier < 65 || item.tier > 70)
-									printf("\nErro! Digite uma letra valida:");
-							} while(item.tier < 65 || item.tier > 70);
-							printf("\nInforme, resumidamente, a descricao do item: ");
-							fflush(stdin);
-							strcpy(item.descr, "");
-							alteraString(item.descr);
-							if (item.descr[(strlen(item.descr) - 1)] == '\n') 
-   								item.descr[(strlen(item.descr) - 1)] = '\0';							
-							gravarItem(item, -1, arqItem);
-							break;
-						case 2: 
-							clear_screen();
-							printf("\n\n---> Listagem de Item <---\n\n");
-							listarItens(arqItem);
-							break;
-						case 3: 
-							clear_screen();
-							printf("\n\n---> Consulta de Item <---\n\n");
-							printf("Digite o nome ou a posicao do item: ");
-							fflush(stdin);
-							gets(item.nome);
-							local = consultarItem(item.nome, arqItem);
-							if (local > 0) {
-								item = lerItem(local, arqItem);
-								mostrarItem(item, BLACK);
-								backgroundcolor(BLACK);
-								textcolor(LIGHTGRAY);
-							}
-							else
-								printf("Item nao encontrado!\n");
-							break;
-						case 4: 
-							clear_screen();
-							printf("\n\n---> Alteracao de Item <---\n\n");
-							printf("Digite o nome ou a posicao do item: ");
-							fflush(stdin);
-							gets(item.nome);
-							local = consultarItem(item.nome, arqItem);
-							if (local > 0) {
-								item = lerItem(local, arqItem);
-								printf("Nome..............: %s\n", item.nome);
-								printf("Digite o nome.....: ");
-								fflush(stdin);
-								gets(item.nome);
-								printf("\nDescricao: ");
-								alteraString(item.descr);
-								gravarItem(item, local, arqItem);
-							}
-							else
-								printf("Codigo nao encontrado!\n");
-							break;
-						case 5: 
-							clear_screen();
-							printf("\n\n---> Exclusao de Item <---\n\n");
-							printf("Digite o nome ou a posicao do item: ");
-							fflush(stdin);
-							gets(item.nome);
-							local = consultarItem(item.nome, arqItem);
-							if (local > 0){
-								excluirItem(local, arqItem);
-								printf("Exclusao concluida\n");
-							}else
-								printf("Item nao encontrado!\n");
-							break;
-				        }
-				        printf("\npressione qualquer tecla para continuar");
-				        _getch();
-				    }while (escolha2 != 0);
-				break;
-			case 4:
-				excluirFisicamenteJogador(&arqJogador, "jogadores.dat");
-				excluirFisicamentePersonagem(&arqPersonagem, "personagens.dat");
-				excluirFisicamenteItem(&arqItem, "itens.dat");
-				printf("Lixeira esvaziada com sucesso!\n");
-				printf("\npressione qualquer tecla para continuar");
-				_getch();
-				break;
-			case 5:
-				criaXML_P(arqPersonagem);
-				criaXML_J(arqJogador);
-				criaXML_I(arqItem);				
-		}
-	}while(escolha1 != 0);
-	fclose(arqPersonagem);
-	fclose(arqJogador);
-	fclose(arqItem);
-    return 0;
 }
