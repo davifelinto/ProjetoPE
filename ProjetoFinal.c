@@ -1,7 +1,7 @@
 //	Sintese
-//	objetivo "Utilitário para acesso de informações úteis de Jogadores/Personagens/Itens em uma campanha de D&D 5E."
-//	autores "ITALO CARDOSO DOS SANTOS VILAS BOAS e DAVI HUGO SATELES FELINTO"
-//	data "08/06/2021"
+//	Objetivo: "Utilitário para acesso de informações úteis de Jogadores/Personagens/Itens em uma campanha de D&D 5E."
+//	Autores: "ITALO CARDOSO DOS SANTOS VILAS BOAS e DAVI HUGO SATELES FELINTO"
+//	Data: "08/06/2021"
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
